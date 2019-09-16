@@ -444,6 +444,7 @@ class AttributesUtil:
         if not res['objects']:
             return None
         term = res['objects'][0]
+        #exit(term)
         return {"ontology_ref": term['guid'].split(":")[1], "id": term['key_props']['id']}
 
     def _add_ontology_info(self, attribute):

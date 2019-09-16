@@ -227,7 +227,7 @@ class GenericsAPITest(unittest.TestCase):
             self.assertIn(error, str(context.exception.args))
         else:
             self.assertEqual(error, str(context.exception.args[0]))
-
+   
     def check_fetch_data_output(self, returnVal):
         self.assertTrue('data_matrix' in returnVal)
         data_matrix = json.loads(returnVal.get('data_matrix'))
@@ -269,7 +269,7 @@ class GenericsAPITest(unittest.TestCase):
         standardized_matrix = self.dfu.get_objects(
                                       {"object_refs": [new_matrix_obj_ref]})['data'][0]
         standardized_data = standardized_matrix.get('data')
-
+    
     def test_bad_fetch_data_params(self):
         self.start_test()
         invalidate_params = {'missing_obj_ref': 'obj_ref'}
@@ -447,3 +447,4 @@ class GenericsAPITest(unittest.TestCase):
         self.assertCountEqual(matrix_data['data']['col_ids'], expected_ids)
         self.assertCountEqual(list(matrix_data['col_mapping'].keys()), expected_ids)
         self.assertEqual(len(matrix_data['data']['values'][0]), len(expected_ids))
+        

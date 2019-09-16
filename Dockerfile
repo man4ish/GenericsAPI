@@ -6,11 +6,13 @@ MAINTAINER KBase Developer
 # install line here, a git checkout to download code, or run any other
 # installation scripts.
 
-# RUN apt-get update
+RUN apt-get update
 
 RUN pip uninstall numpy -y \
     && pip install numpy==1.14.5 \
     && pip install networkx==2.1
+
+RUN conda install  -c bioconda python=3.6.3 biom-format
 
 RUN pip install pandas==0.23.4 \
     && pip install xlrd \

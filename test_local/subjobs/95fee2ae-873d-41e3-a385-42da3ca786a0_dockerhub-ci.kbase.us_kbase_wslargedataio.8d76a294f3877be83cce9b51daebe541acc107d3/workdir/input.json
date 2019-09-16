@@ -1,0 +1,1 @@
+{"id":"4220452173815731","method":"WsLargeDataIO.save_objects","params":[{"id":44051,"objects":[{"type":"KBaseGenomes.Genome","data_json_file":"/kb/module/work/tmp/test_Genome.json","name":"test_Genome","meta":{},"hidden":0}]}],"version":"1.1","context":{"call_stack":[{"time":"2019-09-14T03:10:51+0000","method":"WsLargeDataIO._save_objects_submit"}],"service_ver":"beta"}}

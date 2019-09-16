@@ -1,0 +1,1 @@
+{"id":"930035231967479","method":"DataFileUtil.file_to_shock","params":[{"file_path":"/kb/module/work/tmp/6b026d83-ad81-48d8-a052-0194db84884b/test_expression_matrix_no_attribute_mapping.xlsx","pack":"zip"}],"version":"1.1","context":{"call_stack":[{"time":"2019-09-14T03:12:34+0000","method":"DataFileUtil._file_to_shock_submit"}],"service_ver":"release"}}

@@ -1,0 +1,1 @@
+{"id":"15697241583588972","method":"DataFileUtil.file_to_shock","params":[{"file_path":"/kb/module/work/tmp/23014d52-32d3-409d-b85d-d5f8f9796c6b/test_diff_expr_matrix.xlsx","pack":"zip"}],"version":"1.1","context":{"call_stack":[{"time":"2019-09-14T03:13:23+0000","method":"DataFileUtil._file_to_shock_submit"}],"service_ver":"release"}}
