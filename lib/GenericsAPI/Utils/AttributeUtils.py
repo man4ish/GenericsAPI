@@ -18,7 +18,7 @@ from installed_clients.KBaseReportClient import KBaseReport
 
 class AttributesUtil:
 
-    def __init__(self, config):
+    def __init__(self, config):                                              #initialising parametrs
         self.ws_url = config["workspace-url"]
         self.callback_url = config['SDK_CALLBACK_URL']
         self.token = config['KB_AUTH_TOKEN']
@@ -43,7 +43,7 @@ class AttributesUtil:
         if expected - pkeys:
             raise ValueError("Required keys {} not in supplied parameters"
                              .format(", ".join(expected - pkeys)))
-        defined_param = expected | opt_param
+        defined_param = expected | opt_param                                            #total set of param includes expected and optional parameters
         for param in params:
             if param not in defined_param:
                 logging.warning("Unexpected parameter {} supplied".format(param))
@@ -59,7 +59,8 @@ class AttributesUtil:
             ).get('file_path')
         else:
             raise ValueError("Must supply either a input_shock_id or input_file_path")
-        attr_mapping = self._file_to_am_obj(scratch_file_path)
+        
+        attr_mapping = self._file_to_am_obj(scratch_file_path)                           #map attribute
         info = self.dfu.save_objects({
             "id": params['output_ws_id'],
             "objects": [{
@@ -68,6 +69,7 @@ class AttributesUtil:
                 "name": params['output_obj_name']
             }]
         })[0]
+        
         return {"attribute_mapping_ref": "%s/%s/%s" % (info[6], info[0], info[4])}
 
     def append_file_to_attribute_mapping(self, staging_file_subdir_path, old_am_ref, output_ws_id,
@@ -270,12 +272,15 @@ class AttributesUtil:
         return name, cs_df, obj_type
 
     def _file_to_am_obj(self, scratch_file_path):
+        
         try:
             df = pd.read_excel(scratch_file_path, dtype='str')
         except XLRDError:
             df = pd.read_csv(scratch_file_path, sep=None, dtype='str')
+        
         df = df.replace('nan', '')
-        if df.columns[1].lower() == "attribute ontology id":
+        
+        if df.columns[1].lower() == "attribute ontology id":                     #if column name isattribute ontology id then convert a dataframe from a user file to a compound set object
             am_obj = self._df_to_am_obj(df)
         else:
             am_obj = self._isa_df_to_am_object(df)
@@ -286,25 +291,29 @@ class AttributesUtil:
         if not len(am_df):
             raise ValueError("No attributes in supplied files")
 
-        attribute_df = am_df.filter(regex="[Uu]nit|[Aa]ttribute")
-        instance_df = am_df.drop(attribute_df.columns, axis=1)
+        attribute_df = am_df.filter(regex="[Uu]nit|[Aa]ttribute")     #filter dataframe by keeping Unit and Attribute keywords
+        
+        instance_df = am_df.drop(attribute_df.columns, axis=1)        #drop columns matching with attribute_df columns
+        
         if not len(instance_df.columns):
             raise ValueError("Unable to find any instance columns in supplied file")
 
-        attribute_df.rename(columns=lambda x: x.lower().replace(" ontology ", "_ont_").strip(),
+        attribute_df.rename(columns=lambda x: x.lower().replace(" ontology ", "_ont_").strip(),       #replace ontology column to _ont_
                             inplace=True)
+        
         if "attribute" not in attribute_df.columns:
             raise ValueError("Unable to find a 'attribute' column in supplied file")
-        attribute_df['source'] = 'upload'
+        
+        attribute_df['source'] = 'upload'                                                            #adding column "source"
+        
         attribute_fields = ('attribute', 'unit', 'attribute_ont_id', 'unit_ont_id', 'source')
-        attributes = attribute_df.filter(items=attribute_fields).to_dict('records')
-        print(attributes)
-        self._validate_attribute_values(am_df.set_index(attribute_df.attribute).iterrows())
+        attributes = attribute_df.filter(items=attribute_fields).to_dict('records')                   #filter attribute dataframe based on attribute fileds 
+
+        self._validate_attribute_values(am_df.set_index(attribute_df.attribute).iterrows())           #setting attrinute column as index and validating attribute values
 
         attribute_mapping = {'ontology_mapping_method': "User Curation",
-                             'attributes': [self._add_ontology_info(f) for f in attributes],
-                             'instances': instance_df.to_dict('list')}
-
+                             'attributes': [self._add_ontology_info(f) for f in attributes],          # adding ontology info for each row
+                             'instances': instance_df.to_dict('list')}   
         return attribute_mapping
 
     def _isa_df_to_am_object(self, isa_df):
@@ -332,9 +341,11 @@ class AttributesUtil:
     def _validate_attribute_values(self, attribute_series):
         errors = {}
         for attr, vals in attribute_series:
+            
             try:
-                validator = getattr(AttributeValidation, attr)
+                validator = getattr(AttributeValidation, attr)   #get attr value
                 attr_errors = validator(vals)
+                
                 if attr_errors:
                     errors[attr] = attr_errors
             except AttributeError:
@@ -444,15 +455,16 @@ class AttributesUtil:
         if not res['objects']:
             return None
         term = res['objects'][0]
-        #exit(term)
         return {"ontology_ref": term['guid'].split(":")[1], "id": term['key_props']['id']}
 
     def _add_ontology_info(self, attribute):
+        
         """Searches KBASE ontologies for terms matching the user supplied attributes and units.
         Add the references if found"""
         optionals = {"unit", "unit_ont_id", "unit_ont_ref", }
         attribute = {k: v for k, v in attribute.items() if k not in optionals or v != ""}
-        ont_info = self._search_ontologies(attribute.get('attribute_ont_id', "").replace("_", ":"))
+        ont_info = self._search_ontologies(attribute.get('attribute_ont_id', "").replace("_", ":"))   #search ontology in kbase
+        
         if ont_info:
             attribute['attribute_ont_ref'] = ont_info['ontology_ref']
             attribute['attribute_ont_id'] = ont_info['id']
@@ -466,7 +478,7 @@ class AttributesUtil:
                 attribute['unit_ont_id'] = ont_info['id']
             elif not attribute.get('attribute_ont_id') or attribute['unit_ont_id'] == ":":
                 attribute.pop('unit_ont_id', None)
-
+        
         return attribute
 
     def to_tsv(self, params):
