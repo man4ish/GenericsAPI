@@ -73,6 +73,7 @@ class AttributeUtilsTest(unittest.TestCase):
         if hasattr(cls, 'wsName'):
             cls.wsClient.delete_workspace({'workspace': cls.wsName})
             print('Test workspace was deleted')
+    
 
     def loadExpressionMatrix(self):
         if hasattr(self.__class__, 'expr_matrix_ref'):
@@ -181,17 +182,18 @@ class AttributeUtilsTest(unittest.TestCase):
         filename = params.get('staging_file_subdir_path')
 
         return {'copy_file_path': os.path.join("data", filename)}
-
+    
     # @unittest.skip("Only passes on CI")
     def test_add_ontology_info(self):
+        exit(self.cls.wsId)
         factor = {'attribute': 'stalk development', "attribute_ont_id": "GO:0031150",
-                  "unit": "Hour", "unit_ont_id": "UO_0000032"}
+                "unit": "Hour", "unit_ont_id": "UO:0000032"}
         with_ref = self.serviceUtils._add_ontology_info(factor)
         self.assertEqual(with_ref.get('attribute_ont_ref'), '6308/3/2')
         self.assertEqual(with_ref.get('attribute_ont_id'), 'GO:0031150')
         self.assertEqual(with_ref.get('unit_ont_id'), 'UO:0000032')
         self.assertEqual(with_ref.get('unit_ont_ref'), '6308/15/6')
-
+    
     def test_missing_params(self):
         with self.assertRaisesRegex(ValueError, "Required keys"):
             self.getImpl().file_to_attribute_mapping(self.getContext(), {})
@@ -203,7 +205,7 @@ class AttributeUtilsTest(unittest.TestCase):
             self.getImpl().export_attribute_mapping_excel(self.getContext(), {})
         with self.assertRaisesRegex(ValueError, "Required keys"):
             self.getImpl().export_cluster_set_excel(self.getContext(), {})
-
+    
     def test_tsv_import(self):
         params = {'output_ws_id': self.wsId,
                   'input_file_path': 'data/AM2.tsv',
@@ -214,7 +216,7 @@ class AttributeUtilsTest(unittest.TestCase):
             'object_refs': [ret['attribute_mapping_ref']]
         })['data'][0]['data']
         self.assertEqual(data, self.attribute_mapping_2)
-
+    
     #@unittest.skip("only works on CI")
     def test_isa_import_1(self):
         self.maxDiff = None
@@ -244,7 +246,7 @@ class AttributeUtilsTest(unittest.TestCase):
                                                          'attribute_ont_ref': '6308/19/1',
                                                          'value': 'orotic acid'},
                                          'vehicle': {'value': 'vehicle'}}})
-
+    
     def test_isa_import_2(self):
         params = {'output_ws_id': self.wsId,
                   'input_file_path': 'data/test_ISA_2.tsv',
@@ -264,7 +266,7 @@ class AttributeUtilsTest(unittest.TestCase):
                               'deoxyribonucleic acid': {'attribute_ont_id': 'CHEBI:16991',
                                                         'attribute_ont_ref': '6308/19/1',
                                                         'value': 'deoxyribonucleic acid'}}})
-
+    
     def test_excel_import(self):
         shock_file = '/AM1.xlsx'
         shutil.copy('/kb/module/test/data/' + shock_file, self.scratch + shock_file)
@@ -282,6 +284,7 @@ class AttributeUtilsTest(unittest.TestCase):
         for load_attr, expect_attr in zip(data['attributes'], self.attribute_mapping['attributes']):
             for key in ('attribute', 'attribute_ont_id', 'unit', 'unit_ont_id'):
                 self.assertEqual(load_attr.get(key), expect_attr.get(key))
+                
 
     def test_attribute_validation_1(self):
         file_path = 'data/AM_bad_attributes.tsv'
@@ -417,3 +420,4 @@ class AttributeUtilsTest(unittest.TestCase):
         expected_col = ['WRI_RS00010_CDS_1', 'WRI_RS00015_CDS_1', 'WRI_RS00025_CDS_1', 'cluster']
         self.assertCountEqual(df.index.tolist(), expected_index)
         self.assertCountEqual(df.columns.tolist(), expected_col)
+    
