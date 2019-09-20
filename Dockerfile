@@ -8,11 +8,11 @@ MAINTAINER KBase Developer
 
 RUN apt-get update
 
+RUN conda install  -c bioconda python=3.6.3 biom-format
+
 RUN pip uninstall numpy -y \
     && pip install numpy==1.14.5 \
     && pip install networkx==2.1
-
-RUN conda install  -c bioconda python=3.6.3 biom-format
 
 RUN pip install pandas==0.23.4 \
     && pip install xlrd \

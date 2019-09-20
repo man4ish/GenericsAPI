@@ -1,0 +1,83 @@
+{
+    "metadata": [
+        [
+            17,
+            "test_corr_matrix",
+            "KBaseExperiments.CorrelationMatrix-3.0",
+            "2019-09-19T18:35:20+0000",
+            68,
+            "pranjan77",
+            44071,
+            "man4ish_gupta:narrative_1568644342277",
+            "9f7bcb52a91326a660cd902dd9fd5f5f",
+            502,
+            {
+                "matrix_size": "3"
+            }
+        ]
+    ],
+    "provenance": [
+        {
+            "copy_source_inaccessible": 0,
+            "created": "2019-09-19T18:35:20+0000",
+            "creator": "pranjan77",
+            "epoch": 1568918120368,
+            "extracted_ids": {},
+            "info": [
+                17,
+                "test_corr_matrix",
+                "KBaseExperiments.CorrelationMatrix-3.0",
+                "2019-09-19T18:35:20+0000",
+                68,
+                "pranjan77",
+                44071,
+                "man4ish_gupta:narrative_1568644342277",
+                "9f7bcb52a91326a660cd902dd9fd5f5f",
+                502,
+                {
+                    "matrix_size": "3"
+                }
+            ],
+            "orig_wsid": 44071,
+            "path": [
+                "44071/17/68"
+            ],
+            "provenance": [
+                {
+                    "custom": {},
+                    "description": "KBase SDK method run via the KBase Execution Engine",
+                    "epoch": 1568917866000,
+                    "external_data": [],
+                    "input_ws_objects": [],
+                    "method": "run_local_tests",
+                    "method_params": [],
+                    "resolved_ws_objects": [],
+                    "service": "GenericsAPI",
+                    "service_ver": "local-dev",
+                    "subactions": [
+                        {
+                            "code_url": "https://localhost",
+                            "commit": "local-docker-image",
+                            "name": "GenericsAPI",
+                            "ver": "local-dev"
+                        },
+                        {
+                            "code_url": "https://github.com/kbaseapps/DataFileUtil",
+                            "commit": "7f5646bc29b5cb35d32c86f3acdf7b18a0f6d53f",
+                            "name": "DataFileUtil",
+                            "ver": "0.1.1-release"
+                        },
+                        {
+                            "code_url": "https://github.com/kbaseapps/KBaseReport",
+                            "commit": "0356e0313025b0d4b1b7fa11e96050aeaaaa828c",
+                            "name": "KBaseReport",
+                            "ver": "3.0.5-release"
+                        }
+                    ],
+                    "time": "2019-09-19T18:31:06+0000"
+                }
+            ],
+            "refs": []
+        }
+    ]
+}

@@ -67,11 +67,12 @@ class CorrelationUtil:
         logging.info('start fetching taxon info from AmpliconSet')
         taxons = dict()
         taxons_level = dict()
+        
         amplicon_set_data = self.dfu.get_objects(
                                             {'object_refs': [amplicon_set_ref]})['data'][0]['data']
 
         amplicons = amplicon_set_data.get('amplicons')
-
+        
         for amplicon_id in amplicon_ids:
             scientific_name = 'None'
             level = 'Unknown'
@@ -94,7 +95,7 @@ class CorrelationUtil:
 
         if set(taxons_level.values()) == {'Unknown'}:
             taxons_level = None
-
+        
         return taxons, taxons_level
 
     def _build_table_content(self, matrix_2D, output_directory, original_matrix_ref=[],
@@ -156,13 +157,14 @@ class CorrelationUtil:
             columns.append('Value')
 
         links.columns = columns
+        
 
         if taxons:
             links['Taxon'] = links.iloc[:, 0].map(taxons)
 
         if taxons_level:
             links['Taxon Level'] = links.iloc[:, 0].map(taxons_level)
-
+       
         table_headers = links.columns.tolist()
         table_content = """\n"""
         # build header and footer
@@ -200,7 +202,7 @@ class CorrelationUtil:
                 report_template = report_template.replace('deferLoading_size',
                                                           str(total_rec))
                 result_file.write(report_template)
-
+        
         return page_content
 
     def _generate_visualization_content(self, output_directory, corr_matrix_obj_ref,
@@ -219,11 +221,11 @@ class CorrelationUtil:
         tab_content = ''
 
         corr_data = self.dfu.get_objects({'object_refs': [corr_matrix_obj_ref]})['data'][0]['data']
-
         coefficient_data = corr_data.get('coefficient_data')
         significance_data = corr_data.get('significance_data')
+        
         original_matrix_ref = corr_data.get('original_matrix_ref')
-
+        
         tab_def_content += """
         <div class="tab">
             <button class="tablinks" onclick="openTab(event, 'CorrelationMatrix')" id="defaultOpen">Correlation Matrix</button>
@@ -309,7 +311,7 @@ class CorrelationUtil:
             tab_content += """</div>"""
 
         tab_def_content += """</div>"""
-
+        
         return tab_def_content + tab_content
 
     def _generate_corr_html_report(self, corr_matrix_obj_ref, corr_matrix_plot_path,
@@ -348,6 +350,7 @@ class CorrelationUtil:
                             'label': os.path.basename(result_file_path),
                             'description': 'HTML summary report for Compute Correlation App'
                             })
+       
         return html_report
 
     def _generate_corr_report(self, corr_matrix_obj_ref, workspace_name, corr_matrix_plot_path,
@@ -374,7 +377,7 @@ class CorrelationUtil:
         output = kbase_report_client.create_extended_report(report_params)
 
         report_output = {'report_name': output['name'], 'report_ref': output['ref']}
-
+        
         return report_output
 
     def _corr_for_matrix(self, input_obj_ref, method, dimension):
@@ -500,7 +503,7 @@ class CorrelationUtil:
         significance_df = None
         if significance_data:
             significance_df = self._Matrix2D_to_df(significance_data)
-
+        
         return coefficient_df, significance_df
 
     def _corr_df_to_excel(self, coefficient_df, significance_df, result_dir, corr_matrix_ref):

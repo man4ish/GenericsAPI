@@ -45,6 +45,7 @@ class AttributeUtilsTest(unittest.TestCase):
                              }],
                         'authenticated': 1})
         cls.wsURL = cls.cfg['workspace-url']
+        
         cls.wsClient = workspaceService(cls.wsURL)
         cls.serviceImpl = GenericsAPI(cls.cfg)
         cls.serviceUtils = AttributesUtil(cls.cfg)
@@ -53,9 +54,12 @@ class AttributeUtilsTest(unittest.TestCase):
         cls.dfu = DataFileUtil(cls.callback_url)
 
         suffix = int(time.time() * 1000)
-        cls.wsName = "test_CompoundSetUtils_" + str(suffix)
+        #cls.wsName = "test_CompoundSetUtils_" + str(suffix)
+        cls.wsName = "man4ish_gupta:narrative_1568644342277"
         ret = cls.wsClient.create_workspace({'workspace': cls.wsName})
-        cls.wsId = ret[0]
+        #exit(cls.wsId)
+        #cls.wsId = ret[0]
+        cls.wsid = 44071
         cls.attribute_mapping = json.load(open('data/AM1.json'))
         info = cls.dfu.save_objects({
             "id": cls.wsId,
@@ -71,9 +75,9 @@ class AttributeUtilsTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         if hasattr(cls, 'wsName'):
-            cls.wsClient.delete_workspace({'workspace': cls.wsName})
+            #cls.wsClient.delete_workspace({'workspace': cls.wsName})
             print('Test workspace was deleted')
-
+    '''
     def loadExpressionMatrix(self):
         if hasattr(self.__class__, 'expr_matrix_ref'):
             return self.__class__.expr_matrix_ref
@@ -83,7 +87,7 @@ class AttributeUtilsTest(unittest.TestCase):
         shutil.copy(os.path.join('data', matrix_file_name), matrix_file_path)
 
         obj_type = 'ExpressionMatrix'
-        params = {'obj_type': obj_type,
+        params = {'workspace_name': 'man4ish_gupta:narrative_1568644342277','obj_type': obj_type,
                   'matrix_name': 'test_ExpressionMatrix',
                   'workspace_name': self.wsName,
                   'input_file_path': matrix_file_path,
@@ -95,6 +99,7 @@ class AttributeUtilsTest(unittest.TestCase):
         self.__class__.expr_matrix_ref = expr_matrix_ref
         print('Loaded ExpressionMatrix: ' + expr_matrix_ref)
         return expr_matrix_ref
+    
 
     def loadClusterSet(self):
 
@@ -115,7 +120,7 @@ class AttributeUtilsTest(unittest.TestCase):
                                             'WRI_RS00010_CDS_1': 0}}],
                             'original_data': expr_matrix_ref}
 
-        save_object_params = {
+        save_object_params = {'workspace_name': 'man4ish_gupta:narrative_1568644342277',
             'id': self.wsId,
             'objects': [{'type': object_type,
                          'data': cluster_set_data,
@@ -149,7 +154,7 @@ class AttributeUtilsTest(unittest.TestCase):
                                             'instance_4': 3}}],
                             'original_data': expr_matrix_ref}
 
-        save_object_params = {
+        save_object_params = {'workspace_name': 'man4ish_gupta:narrative_1568644342277',
             'id': self.wsId,
             'objects': [{'type': object_type,
                          'data': cluster_set_data,
@@ -181,17 +186,24 @@ class AttributeUtilsTest(unittest.TestCase):
         filename = params.get('staging_file_subdir_path')
 
         return {'copy_file_path': os.path.join("data", filename)}
-    
+
     # @unittest.skip("Only passes on CI")
     def test_add_ontology_info(self):
-        factor = {'attribute': 'stalk development', "attribute_ont_id": "GO:0031150",
-                "unit": "Hour", "unit_ont_id": "UO:0000032"}
-        with_ref = self.serviceUtils._add_ontology_info(factor)
+        params = {
+            'workspace_name': 'man4ish_gupta:narrative_1568648000824',
+            'attribute': 'stalk development', "attribute_ont_id": "GO:0031150",
+            "unit": "Hour", "unit_ont_id": "UO:0000032"
+        }
+        #exit(self.serviceUtils)
+        #factor = {'attribute': 'stalk development', "attribute_ont_id": "GO:0031150",
+        #        "unit": "Hour", "unit_ont_id": "UO:0000032"}
+        #with_ref = self.serviceUtils._add_ontology_info(factor)
+        with_ref = self.serviceUtils._add_ontology_info(params)
         self.assertEqual(with_ref.get('attribute_ont_ref'), '6308/3/2')
         self.assertEqual(with_ref.get('attribute_ont_id'), 'GO:0031150')
         self.assertEqual(with_ref.get('unit_ont_id'), 'UO:0000032')
         self.assertEqual(with_ref.get('unit_ont_ref'), '6308/15/6')
-    
+
     def test_missing_params(self):
         with self.assertRaisesRegex(ValueError, "Required keys"):
             self.getImpl().file_to_attribute_mapping(self.getContext(), {})
@@ -203,9 +215,9 @@ class AttributeUtilsTest(unittest.TestCase):
             self.getImpl().export_attribute_mapping_excel(self.getContext(), {})
         with self.assertRaisesRegex(ValueError, "Required keys"):
             self.getImpl().export_cluster_set_excel(self.getContext(), {})
-    
+    '''
     def test_tsv_import(self):
-        params = {'output_ws_id': self.wsId,
+        params = {'workspace_name': 'man4ish_gupta:narrative_1568648000824', 'output_ws_id': self.wsId,
                   'input_file_path': 'data/AM2.tsv',
                   'output_obj_name': 'AM2'}
         ret = self.getImpl().file_to_attribute_mapping(self.getContext(), params)[0]
@@ -214,7 +226,7 @@ class AttributeUtilsTest(unittest.TestCase):
             'object_refs': [ret['attribute_mapping_ref']]
         })['data'][0]['data']
         self.assertEqual(data, self.attribute_mapping_2)
-    
+    '''
     #@unittest.skip("only works on CI")
     def test_isa_import_1(self):
         self.maxDiff = None
@@ -244,7 +256,7 @@ class AttributeUtilsTest(unittest.TestCase):
                                                          'attribute_ont_ref': '6308/19/1',
                                                          'value': 'orotic acid'},
                                          'vehicle': {'value': 'vehicle'}}})
-    
+
     def test_isa_import_2(self):
         params = {'output_ws_id': self.wsId,
                   'input_file_path': 'data/test_ISA_2.tsv',
@@ -264,12 +276,12 @@ class AttributeUtilsTest(unittest.TestCase):
                               'deoxyribonucleic acid': {'attribute_ont_id': 'CHEBI:16991',
                                                         'attribute_ont_ref': '6308/19/1',
                                                         'value': 'deoxyribonucleic acid'}}})
-    
+
     def test_excel_import(self):
         shock_file = '/AM1.xlsx'
         shutil.copy('/kb/module/test/data/' + shock_file, self.scratch + shock_file)
         shock_id = self.dfu.file_to_shock({'file_path': self.scratch + shock_file})['shock_id']
-        params = {'output_ws_id': self.getWsId(),
+        params = {'workspace_name': 'man4ish_gupta:narrative_1568648000824', 'output_ws_id': self.getWsId(),
                   'input_shock_id': shock_id,
                   'output_obj_name': 'AM1'}
         ret = self.getImpl().file_to_attribute_mapping(self.getContext(), params)[0]
@@ -282,7 +294,6 @@ class AttributeUtilsTest(unittest.TestCase):
         for load_attr, expect_attr in zip(data['attributes'], self.attribute_mapping['attributes']):
             for key in ('attribute', 'attribute_ont_id', 'unit', 'unit_ont_id'):
                 self.assertEqual(load_attr.get(key), expect_attr.get(key))
-                
 
     def test_attribute_validation_1(self):
         file_path = 'data/AM_bad_attributes.tsv'
@@ -418,4 +429,4 @@ class AttributeUtilsTest(unittest.TestCase):
         expected_col = ['WRI_RS00010_CDS_1', 'WRI_RS00015_CDS_1', 'WRI_RS00025_CDS_1', 'cluster']
         self.assertCountEqual(df.index.tolist(), expected_index)
         self.assertCountEqual(df.columns.tolist(), expected_col)
-    
+        '''

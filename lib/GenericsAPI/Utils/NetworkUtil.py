@@ -65,7 +65,7 @@ class NetworkUtil:
         """
         _generate_visualization_content: generate visualization html content
         """
-
+        
         graph_nodes_content = str(graph.nodes()).replace('u', '')
         graph_edges_content = str([list(edge) for edge in graph.edges()]).replace('u', '')
 
@@ -105,6 +105,7 @@ class NetworkUtil:
                             'label': os.path.basename(result_file_path),
                             'description': 'HTML summary report for Build Network App'
                             })
+        
         return html_report
 
     def _generate_plotly_network(self, graph):
@@ -129,6 +130,7 @@ class NetworkUtil:
                             'label': os.path.basename(result_file_path),
                             'description': 'HTML summary report for Build Network App'
                             })
+     
         return html_report
 
     def _plotly_network(self, graph, result_file_path):

@@ -177,7 +177,6 @@ class BiomUtil:
         taxon_level_mapping = {'l': 'Life', 'd': 'Domain', 'k': 'Kingdom', 'p': 'Phylum',
                                'c': 'Class', 'o': 'Order', 'f': 'Family', 'g': 'Genus',
                                's': 'Species'}
-
         return taxon_level_mapping.get(taxon_char[0].lower(), 'Unknown')
 
     def _fetch_taxonomy(self, datarow):
@@ -187,6 +186,7 @@ class BiomUtil:
             lineage = [x.strip() for x in lineage.split(delimiter)]
 
         taxonomy = {'lineage': lineage}
+        
 
         for key in ['score', 'taxonomy_source', 'species_name']:
             val = self._retrieve_value([], datarow, key)
@@ -207,12 +207,11 @@ class BiomUtil:
                                      'scientific_name': scientific_name,
                                      'taxon_level': taxon_level})
                     break
-
         return taxonomy
 
-    def _retrieve_tsv_amplicon_set_data(self, tsv_file):
+    def _retrieve_tsv_amplicon_set_data(self, tsv_file):              #tsv file is data/amplicon_test.tsv
         amplicons = dict()
-
+        
         try:
             logging.info('start parsing TSV file')
             reader = pd.read_csv(tsv_file, sep=None, iterator=True)
@@ -234,14 +233,18 @@ class BiomUtil:
             amplicons.update({observation_id: amplicon})
 
         logging.info('finished parsing TSV file')
-
+        
         return amplicons
+        '''
+        {'GG_OTU_1': {'consensus_sequence': 'AACCGG', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_1', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_2': {'consensus_sequence': 'TTGGCC', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_1', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_3': {'consensus_sequence': 'AACCTT', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_1', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_4': {'consensus_sequence': 'AACCTT', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_2', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_5': {'consensus_sequence': 'TTCCGG', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_2', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_6': {'consensus_sequence': 'AACCGG', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_2', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}}
+        '''
 
     def _retrieve_tsv_fasta_amplicon_set_data(self, tsv_file, fasta_file):
+        #tsvfile = data/amplicon_test.tsv
         amplicons = dict()
         try:
             logging.info('start parsing FASTA file')
-            fastq_dict = SeqIO.index(fasta_file, "fasta")
+            fastq_dict = SeqIO.index(fasta_file, "fasta")      #{'GG_OTU_1' : SeqRecord(...), ...}
         except Exception:
             raise ValueError('Cannot parse file. Please provide valide FASTA file')
 
@@ -266,8 +269,12 @@ class BiomUtil:
 
         logging.info('finished processing files')
         return amplicons
+        '''
+        {'GG_OTU_1': {'consensus_sequence': 'ACTGACTAGCTAGCTAACTG', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_1', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_2': {'consensus_sequence': 'GCATCGTAGCTAGCTACGAT', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_1', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_3': {'consensus_sequence': 'CATCGATCGTACGTACGTAG', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_1', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_4': {'consensus_sequence': 'ATCGATCGATCGTACGATCG', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_2', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_5': {'consensus_sequence': 'ATCGATCGATCGTACGATCG', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_2', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_6': {'consensus_sequence': 'ATCGATCGATCGTACGATCG', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_2', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}}
+        '''
 
     def _retrieve_biom_fasta_amplicon_set_data(self, biom_file, fasta_file):
+        #exit(biom_file)  data/phyloseq_test.biom
         amplicons = dict()
         try:
             logging.info('start parsing FASTA file')
@@ -295,6 +302,10 @@ class BiomUtil:
 
         logging.info('finished processing files')
         return amplicons
+        '''
+        {'GG_OTU_1': {'consensus_sequence': 'ACTGACTAGCTAGCTAACTG', 'taxonomy': {'lineage': ['k__Bacteria', 'p__Proteobacteria', 'c__Gammaproteobacteria', 'o__Enterobacteriales', 'f__Enterobacteriaceae', 'g__Escherichia', 's__'], 'taxon_ref': 'ReferenceTaxons/561_taxon', 'taxon_id': '561_taxon', 'scientific_name': 'Escherichia', 'taxon_level': 'Genus'}}, 'GG_OTU_2': {'consensus_sequence': 'GCATCGTAGCTAGCTACGAT', 'taxonomy': {'lineage': ['k__Bacteria', 'p__Cyanobacteria', 'c__Nostocophycideae', 'o__Nostocales', 'f__Nostocaceae', 'g__Dolichospermum', 's__'], 'taxon_ref': 'ReferenceTaxons/748770_taxon', 'taxon_id': '748770_taxon', 'scientific_name': 'Dolichospermum', 'taxon_level': 'Genus'}}, 'GG_OTU_3': {'consensus_sequence': 'CATCGATCGTACGTACGTAG', 'taxonomy': {'lineage': ['k__Archaea', 'p__Euryarchaeota', 'c__Methanomicrobia', 'o__Methanosarcinales', 'f__Methanosarcinaceae', 'g__Methanosarcina', 's__'], 'taxon_ref': 'ReferenceTaxons/2207_taxon', 'taxon_id': '2207_taxon', 'scientific_name': 'Methanosarcina', 'taxon_level': 'Genus'}}, 'GG_OTU_4': {'consensus_sequence': 'ATCGATCGATCGTACGATCG', 'taxonomy': {'lineage': ['k__Bacteria', 'p__Firmicutes', 'c__Clostridia', 'o__Halanaerobiales', 'f__Halanaerobiaceae', 'g__Halanaerobium', 's__Halanaerobiumsaccharolyticum'], 'taxon_ref': 'ReferenceTaxons/2330_taxon', 'taxon_id': '2330_taxon', 'scientific_name': 'Halanaerobium', 'taxon_level': 'Genus'}}, 'GG_OTU_5': {'consensus_sequence': 'ATCGATCGATCGTACGATCG', 'taxonomy': {'lineage': ['k__Bacteria', 'p__Proteobacteria', 'c__Gammaproteobacteria', 'o__Enterobacteriales', 'f__Enterobacteriaceae', 'g__Escherichia', 's__'], 'taxon_ref': 'ReferenceTaxons/561_taxon', 'taxon_id': '561_taxon', 'scientific_name': 'Escherichia', 'taxon_level': 'Genus'}}}
+        '''
+        
 
     def _retrieve_biom_tsv_amplicon_set_data(self, biom_file, tsv_file):
         amplicons = dict()
@@ -328,6 +339,9 @@ class BiomUtil:
             amplicons.update({observation_id: amplicon})
 
         logging.info('finished processing files')
+        '''
+        {'GG_OTU_1': {'consensus_sequence': 'AACCGG', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_1', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_2': {'consensus_sequence': 'TTGGCC', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_1', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_3': {'consensus_sequence': 'AACCTT', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_1', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_4': {'consensus_sequence': 'AACCTT', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_2', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}, 'GG_OTU_5': {'consensus_sequence': 'TTCCGG', 'taxonomy': {'lineage': ['k__Bacteria', 'k__Bacteria'], 'taxonomy_source': 'source_2', 'taxon_ref': 'ReferenceTaxons/2_taxon', 'taxon_id': '2_taxon', 'scientific_name': 'Bacteria', 'taxon_level': 'Kingdom'}}}
+        '''
         return amplicons
 
     def _file_to_amplicon_set_data(self, biom_file, tsv_file, fasta_file, mode, refs, description,
@@ -359,7 +373,9 @@ class BiomUtil:
         matrix_obj_ref_array = matrix_obj_ref.split('/')
         amplicon_set_data['amplicon_matrix_ref'] = '{}/{}'.format(matrix_obj_ref_array[0],
                                                                   matrix_obj_ref_array[1])
-
+        '''
+        {'amplicons': {'GG_OTU_1': {'consensus_sequence': 'ACTGACTAGCTAGCTAACTG', 'taxonomy': {'lineage': ['k__Bacteria', 'p__Proteobacteria', 'c__Gammaproteobacteria', 'o__Enterobacteriales', 'f__Enterobacteriaceae', 'g__Escherichia', 's__'], 'taxon_ref': 'ReferenceTaxons/561_taxon', 'taxon_id': '561_taxon', 'scientific_name': 'Escherichia', 'taxon_level': 'Genus'}}, 'GG_OTU_2': {'consensus_sequence': 'GCATCGTAGCTAGCTACGAT', 'taxonomy': {'lineage': ['k__Bacteria', 'p__Cyanobacteria', 'c__Nostocophycideae', 'o__Nostocales', 'f__Nostocaceae', 'g__Dolichospermum', 's__'], 'taxon_ref': 'ReferenceTaxons/748770_taxon', 'taxon_id': '748770_taxon', 'scientific_name': 'Dolichospermum', 'taxon_level': 'Genus'}}, 'GG_OTU_3': {'consensus_sequence': 'CATCGATCGTACGTACGTAG', 'taxonomy': {'lineage': ['k__Archaea', 'p__Euryarchaeota', 'c__Methanomicrobia', 'o__Methanosarcinales', 'f__Methanosarcinaceae', 'g__Methanosarcina', 's__'], 'taxon_ref': 'ReferenceTaxons/2207_taxon', 'taxon_id': '2207_taxon', 'scientific_name': 'Methanosarcina', 'taxon_level': 'Genus'}}, 'GG_OTU_4': {'consensus_sequence': 'ATCGATCGATCGTACGATCG', 'taxonomy': {'lineage': ['k__Bacteria', 'p__Firmicutes', 'c__Clostridia', 'o__Halanaerobiales', 'f__Halanaerobiaceae', 'g__Halanaerobium', 's__Halanaerobiumsaccharolyticum'], 'taxon_ref': 'ReferenceTaxons/2330_taxon', 'taxon_id': '2330_taxon', 'scientific_name': 'Halanaerobium', 'taxon_level': 'Genus'}}, 'GG_OTU_5': {'consensus_sequence': 'ATCGATCGATCGTACGATCG', 'taxonomy': {'lineage': ['k__Bacteria', 'p__Proteobacteria', 'c__Gammaproteobacteria', 'o__Enterobacteriales', 'f__Enterobacteriaceae', 'g__Escherichia', 's__'], 'taxon_ref': 'ReferenceTaxons/561_taxon', 'taxon_id': '561_taxon', 'scientific_name': 'Escherichia', 'taxon_level': 'Genus'}}}, 'description': 'OTU data', 'amplicon_matrix_ref': '44071/21'}
+        '''
         return amplicon_set_data
 
     def _file_to_amplicon_data(self, biom_file, tsv_file, mode, refs, matrix_name, workspace_id,
@@ -443,7 +459,9 @@ class BiomUtil:
         amplicon_data['scale'] = scale
         if description:
             amplicon_data['description'] = description
-
+        '''
+        {'col_attributemapping_ref': '44071/33/24', 'row_attributemapping_ref': '44071/19/119', 'row_mapping': {'GG_OTU_1': 'GG_OTU_1', 'GG_OTU_2': 'GG_OTU_2', 'GG_OTU_3': 'GG_OTU_3', 'GG_OTU_4': 'GG_OTU_4', 'GG_OTU_5': 'GG_OTU_5'}, 'col_mapping': {'Sample1': 'Sample1', 'Sample2': 'Sample2', 'Sample3': 'Sample3', 'Sample4': 'Sample4', 'Sample5': 'Sample5', 'Sample6': 'Sample6'}, 'attributes': {'generated_by': 'QIIME revision XYZ'}, 'data': {'row_ids': ['GG_OTU_1', 'GG_OTU_2', 'GG_OTU_3', 'GG_OTU_4', 'GG_OTU_5'], 'col_ids': ['Sample1', 'Sample2', 'Sample3', 'Sample4', 'Sample5', 'Sample6'], 'values': [[0.0, 0.0, 1.0, 0.0, 0.0, 0.0], [5.0, 1.0, 0.0, 2.0, 3.0, 1.0], [0.0, 0.0, 1.0, 4.0, 2.0, 0.0], [2.0, 1.0, 1.0, 0.0, 0.0, 1.0], [0.0, 1.0, 1.0, 0.0, 0.0, 0.0]]}, 'search_attributes': ['generated_by|QIIME revision XYZ'], 'scale': 'raw', 'description': 'OTU data'}
+        '''
         return amplicon_data
 
     def get_attribute_mapping(self, axis, metadata, matrix_data, matrix_name, refs,  workspace_id,
@@ -475,7 +493,9 @@ class BiomUtil:
             mapping_data[f'{axis}_attributemapping_ref'] = self._meta_df_to_attribute_mapping(
                 axis_ids, metadata_df, name, workspace_id)
             mapping_data[f'{axis}_mapping'] = {x: x for x in axis_ids}
-
+        '''
+        {'row_attributemapping_ref': '44071/19/122', 'row_mapping': {'GG_OTU_1': 'GG_OTU_1', 'GG_OTU_2': 'GG_OTU_2', 'GG_OTU_3': 'GG_OTU_3', 'GG_OTU_4': 'GG_OTU_4', 'GG_OTU_5': 'GG_OTU_5', 'GG_OTU_6': 'GG_OTU_6'}} 
+        '''
         return mapping_data
 
     def _meta_df_to_attribute_mapping(self, axis_ids, metadata_df, obj_name, ws_id):
@@ -495,7 +515,7 @@ class BiomUtil:
                 "name": obj_name
             }]
         })[0]
-
+        # 44071/19/128
         return f'{info[6]}/{info[0]}/{info[4]}'
 
     def _metadata_to_attribute_mapping(self, instances, metadata, obj_name, ws_id):
@@ -515,6 +535,7 @@ class BiomUtil:
                 "name": obj_name
             }]
         })[0]
+        # 44071/19/134
         return f'{info[6]}/{info[0]}/{info[4]}'
 
     def _generate_report(self, matrix_obj_ref, amplicon_set_obj_ref, new_row_attr_ref,
@@ -543,7 +564,7 @@ class BiomUtil:
         output = kbase_report_client.create_extended_report(report_params)
 
         report_output = {'report_name': output['name'], 'report_ref': output['ref']}
-
+        #{'report_name': 'import_matrix_from_biom_db306341-c03a-4e60-b8a4-2bd7f6a48925', 'report_ref': '44071/200/1'}
         return report_output
 
     def _df_to_tsv(self, amplicon_set_df, result_dir, amplicon_set_ref):
@@ -601,7 +622,7 @@ class BiomUtil:
 
         merged_df = df.merge(meta_df, left_index=True, right_index=True, how='left',
                              validate='one_to_one')
-
+        exit(merged_df)
         return merged_df
 
     def __init__(self, config):

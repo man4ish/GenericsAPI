@@ -61,6 +61,7 @@ class AttributesUtil:
             raise ValueError("Must supply either a input_shock_id or input_file_path")
         
         attr_mapping = self._file_to_am_obj(scratch_file_path)                           #map attribute
+        
         info = self.dfu.save_objects({
             "id": params['output_ws_id'],
             "objects": [{
@@ -76,7 +77,7 @@ class AttributesUtil:
                                          new_am_name=None):
         """append an attribute mapping file to existing attribute mapping object
         """
-
+        
         download_staging_file_params = {
             'staging_file_subdir_path': staging_file_subdir_path
         }
@@ -92,6 +93,7 @@ class AttributesUtil:
         old_am_data = old_am_obj['data']
 
         new_am_data = self._check_and_append_am_data(old_am_data, append_am_data)
+        
 
         if not new_am_name:
             current_time = time.localtime()
@@ -105,6 +107,7 @@ class AttributesUtil:
                 "name": new_am_name
             }]
         })[0]
+        
         return {"attribute_mapping_ref": "%s/%s/%s" % (info[6], info[0], info[4])}
 
     def update_matrix_attribute_mapping(self, params):
@@ -319,7 +322,7 @@ class AttributesUtil:
     def _isa_df_to_am_object(self, isa_df):
         skip_columns = {'Raw Data File', 'Derived Data File', 'Array Data File', 'Image File'}
         if 'Sample Name'in isa_df.columns and not any(isa_df['Sample Name'].duplicated()):
-            isa_df.set_index('Sample Name', inplace=True)
+            isa_df.set_index('Sample Name', inplace=True)                                             # setting sample name as index column
         elif 'Assay Name'in isa_df.columns and not any(isa_df['Assay Name'].duplicated()):
             isa_df.set_index('Assay Name', inplace=True)
         elif not any(isa_df[isa_df.columns[0]].duplicated()):
@@ -328,14 +331,16 @@ class AttributesUtil:
         else:
             raise ValueError("Unable to detect an ID column that was unigue for each row. "
                              f"Considered 'Sample Names', 'Assay Names' and {isa_df.columns[0]}")
-        self._validate_attribute_values(isa_df.iteritems())
+        self._validate_attribute_values(isa_df.iteritems())                                           # validating attribute values
 
         attribute_mapping = {'ontology_mapping_method': "User Curation - ISA format"}
         attribute_mapping['attributes'], new_skip_cols = self._get_attributes_from_isa(
             isa_df, skip_columns)
+        
         reduced_isa = isa_df.drop(columns=new_skip_cols, errors='ignore')
+        
         attribute_mapping['instances'] = reduced_isa.T.to_dict('list')
-
+        
         return attribute_mapping
 
     def _validate_attribute_values(self, attribute_series):
