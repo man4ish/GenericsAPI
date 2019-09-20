@@ -297,15 +297,15 @@
 <p id="n228" class="pln"><a href="#n228">228</a></p>
 <p id="n229" class="pln"><a href="#n229">229</a></p>
 <p id="n230" class="pln"><a href="#n230">230</a></p>
-<p id="n231" class="stm run hide_run"><a href="#n231">231</a></p>
+<p id="n231" class="stm mis"><a href="#n231">231</a></p>
 <p id="n232" class="pln"><a href="#n232">232</a></p>
 <p id="n233" class="pln"><a href="#n233">233</a></p>
 <p id="n234" class="pln"><a href="#n234">234</a></p>
-<p id="n235" class="stm run hide_run"><a href="#n235">235</a></p>
+<p id="n235" class="stm mis"><a href="#n235">235</a></p>
 <p id="n236" class="stm mis"><a href="#n236">236</a></p>
 <p id="n237" class="pln"><a href="#n237">237</a></p>
 <p id="n238" class="pln"><a href="#n238">238</a></p>
-<p id="n239" class="stm run hide_run"><a href="#n239">239</a></p>
+<p id="n239" class="stm mis"><a href="#n239">239</a></p>
 <p id="n240" class="pln"><a href="#n240">240</a></p>
 <p id="n241" class="stm run hide_run"><a href="#n241">241</a></p>
 <p id="n242" class="pln"><a href="#n242">242</a></p>
@@ -740,15 +740,15 @@
 <p id="n671" class="pln"><a href="#n671">671</a></p>
 <p id="n672" class="pln"><a href="#n672">672</a></p>
 <p id="n673" class="pln"><a href="#n673">673</a></p>
-<p id="n674" class="stm mis"><a href="#n674">674</a></p>
+<p id="n674" class="stm run hide_run"><a href="#n674">674</a></p>
 <p id="n675" class="pln"><a href="#n675">675</a></p>
 <p id="n676" class="pln"><a href="#n676">676</a></p>
 <p id="n677" class="pln"><a href="#n677">677</a></p>
-<p id="n678" class="stm mis"><a href="#n678">678</a></p>
+<p id="n678" class="stm run hide_run"><a href="#n678">678</a></p>
 <p id="n679" class="stm mis"><a href="#n679">679</a></p>
 <p id="n680" class="pln"><a href="#n680">680</a></p>
 <p id="n681" class="pln"><a href="#n681">681</a></p>
-<p id="n682" class="stm mis"><a href="#n682">682</a></p>
+<p id="n682" class="stm run hide_run"><a href="#n682">682</a></p>
 <p id="n683" class="pln"><a href="#n683">683</a></p>
 <p id="n684" class="stm run hide_run"><a href="#n684">684</a></p>
 <p id="n685" class="pln"><a href="#n685">685</a></p>
@@ -1055,15 +1055,15 @@
 <p id="t228" class="pln">        <span class="com"># ctx is the context object</span><span class="strut">&nbsp;</span></p>
 <p id="t229" class="pln">        <span class="com"># return variables are: returnVal</span><span class="strut">&nbsp;</span></p>
 <p id="t230" class="pln">        <span class="com">#BEGIN import_matrix_from_biom</span><span class="strut">&nbsp;</span></p>
-<p id="t231" class="stm run hide_run">        <span class="nam">returnVal</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">biom_util</span><span class="op">.</span><span class="nam">import_matrix_from_biom</span><span class="op">(</span><span class="nam">params</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t231" class="stm mis">        <span class="nam">returnVal</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">biom_util</span><span class="op">.</span><span class="nam">import_matrix_from_biom</span><span class="op">(</span><span class="nam">params</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t232" class="pln">        <span class="com">#END import_matrix_from_biom</span><span class="strut">&nbsp;</span></p>
 <p id="t233" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t234" class="pln">        <span class="com"># At some point might do deeper type checking...</span><span class="strut">&nbsp;</span></p>
-<p id="t235" class="stm run hide_run">        <span class="key">if</span> <span class="key">not</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">returnVal</span><span class="op">,</span> <span class="nam">dict</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t235" class="stm mis">        <span class="key">if</span> <span class="key">not</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">returnVal</span><span class="op">,</span> <span class="nam">dict</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
 <p id="t236" class="stm mis">            <span class="key">raise</span> <span class="nam">ValueError</span><span class="op">(</span><span class="str">'Method import_matrix_from_biom return value '</span> <span class="op">+</span><span class="strut">&nbsp;</span></p>
 <p id="t237" class="pln">                             <span class="str">'returnVal is not type dict as required.'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t238" class="pln">        <span class="com"># return the results</span><span class="strut">&nbsp;</span></p>
-<p id="t239" class="stm run hide_run">        <span class="key">return</span> <span class="op">[</span><span class="nam">returnVal</span><span class="op">]</span><span class="strut">&nbsp;</span></p>
+<p id="t239" class="stm mis">        <span class="key">return</span> <span class="op">[</span><span class="nam">returnVal</span><span class="op">]</span><span class="strut">&nbsp;</span></p>
 <p id="t240" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t241" class="stm run hide_run">    <span class="key">def</span> <span class="nam">save_object</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">ctx</span><span class="op">,</span> <span class="nam">params</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
 <p id="t242" class="pln">        <span class="str">"""</span><span class="strut">&nbsp;</span></p>
@@ -1498,15 +1498,15 @@
 <p id="t671" class="pln">        <span class="com"># ctx is the context object</span><span class="strut">&nbsp;</span></p>
 <p id="t672" class="pln">        <span class="com"># return variables are: returnVal</span><span class="strut">&nbsp;</span></p>
 <p id="t673" class="pln">        <span class="com">#BEGIN build_network</span><span class="strut">&nbsp;</span></p>
-<p id="t674" class="stm mis">        <span class="nam">returnVal</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">network_util</span><span class="op">.</span><span class="nam">build_network</span><span class="op">(</span><span class="nam">params</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
+<p id="t674" class="stm run hide_run">        <span class="nam">returnVal</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">network_util</span><span class="op">.</span><span class="nam">build_network</span><span class="op">(</span><span class="nam">params</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t675" class="pln">        <span class="com">#END build_network</span><span class="strut">&nbsp;</span></p>
 <p id="t676" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t677" class="pln">        <span class="com"># At some point might do deeper type checking...</span><span class="strut">&nbsp;</span></p>
-<p id="t678" class="stm mis">        <span class="key">if</span> <span class="key">not</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">returnVal</span><span class="op">,</span> <span class="nam">dict</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
+<p id="t678" class="stm run hide_run">        <span class="key">if</span> <span class="key">not</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">returnVal</span><span class="op">,</span> <span class="nam">dict</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
 <p id="t679" class="stm mis">            <span class="key">raise</span> <span class="nam">ValueError</span><span class="op">(</span><span class="str">'Method build_network return value '</span> <span class="op">+</span><span class="strut">&nbsp;</span></p>
 <p id="t680" class="pln">                             <span class="str">'returnVal is not type dict as required.'</span><span class="op">)</span><span class="strut">&nbsp;</span></p>
 <p id="t681" class="pln">        <span class="com"># return the results</span><span class="strut">&nbsp;</span></p>
-<p id="t682" class="stm mis">        <span class="key">return</span> <span class="op">[</span><span class="nam">returnVal</span><span class="op">]</span><span class="strut">&nbsp;</span></p>
+<p id="t682" class="stm run hide_run">        <span class="key">return</span> <span class="op">[</span><span class="nam">returnVal</span><span class="op">]</span><span class="strut">&nbsp;</span></p>
 <p id="t683" class="pln"><span class="strut">&nbsp;</span></p>
 <p id="t684" class="stm run hide_run">    <span class="key">def</span> <span class="nam">run_pca</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">ctx</span><span class="op">,</span> <span class="nam">params</span><span class="op">)</span><span class="op">:</span><span class="strut">&nbsp;</span></p>
 <p id="t685" class="pln">        <span class="str">"""</span><span class="strut">&nbsp;</span></p>
@@ -1590,7 +1590,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v4.5.1</a>,
-            created at 2019-09-20 03:18
+            created at 2019-09-20 17:00
         </p>
     </div>
 </div>

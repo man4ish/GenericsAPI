@@ -363,8 +363,7 @@ class NetworkUtil:
         nx.draw(graph, pos=graph_pos, with_labels=True, node_color=node_color, node_size=node_size,
                 edge_color=edge_color, alpha=alpha, font_color=font_color, linewidths=linewidths,
                 font_size=font_size)
-
-        plt.savefig(path)
+        plt.savefig(path)   #graph.png
 
     def df_to_graph(self, graph_df, source, target):
         """
@@ -374,7 +373,6 @@ class NetworkUtil:
 
         graph = nx.from_pandas_edgelist(graph_df, source=source, target=target,
                                         edge_attr=['weight'])
-
         return graph
 
     def build_network(self, params):
@@ -395,7 +393,7 @@ class NetworkUtil:
         coefficient_data = corr_data.get('coefficient_data')
         significance_data = corr_data.get('significance_data')
 
-        if params.get('filter_on_threshold'):
+        if params.get('filter_on_threshold'):            #'coefficient_threshold': 0.8
             coefficient_threshold = params.get('filter_on_threshold').get('coefficient_threshold')
             significance_threshold = params.get('filter_on_threshold').get('significance_threshold')
             corr_df = self._Matrix2D_to_df(coefficient_data)
@@ -423,4 +421,5 @@ class NetworkUtil:
         report_output = self._generate_network_report(graph, network_obj_ref, workspace_name)
 
         returnVal.update(report_output)
+        #{'network_obj_ref': '44071/59/9', 'report_name': 'build_network_6ff8ee41-076c-4541-983d-2667f4817f07', 'report_ref': '44071/207/1'}
         return returnVal

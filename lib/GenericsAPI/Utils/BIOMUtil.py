@@ -622,7 +622,7 @@ class BiomUtil:
 
         merged_df = df.merge(meta_df, left_index=True, right_index=True, how='left',
                              validate='one_to_one')
-        exit(merged_df)
+        
         return merged_df
 
     def __init__(self, config):
