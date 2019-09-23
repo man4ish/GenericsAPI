@@ -81,11 +81,25 @@ class DataTableUtil:
                 report_template = report_template.replace('deferLoading_size',
                                                           str(total_rec))
                 result_file.write(report_template)
-
+        #exit(page_content)
+        '''
+        <iframe height="900px" width="100%" src="matrix_data_viewer_f3dac561-d9a3-4b05-a79c-d5ce454a36e8.html" style="border:none;"></iframe>
+        '''
         return page_content
 
     def _generate_visualization_content(self, output_directory, matrix_df):
+        #exit(matrix_df)
+        '''
+        SystemExit:          ID                        ...                                                                   taxonomy
+0  GG_OTU_1                        ...                          ['k__Bacteria', 'p__Proteobacteria', 'c__Gamma...
+1  GG_OTU_2                        ...                          ['k__Bacteria', 'p__Cyanobacteria', 'c__Nostoc...
+2  GG_OTU_3                        ...                          ['k__Archaea', 'p__Euryarchaeota', 'c__Methano...
+3  GG_OTU_4                        ...                          ['k__Bacteria', 'p__Firmicutes', 'c__Clostridi...
+4  GG_OTU_5                        ...                          ['k__Bacteria', 'p__Proteobacteria', 'c__Gamma...
 
+[5 rows x 8 columns]
+
+        '''
         tab_def_content = ''
         tab_content = ''
 
@@ -100,6 +114,19 @@ class DataTableUtil:
 
         tab_def_content += """\n</div>\n"""
 
+        #exit(tab_def_content + tab_content)
+        '''
+        <div class="tab">
+
+        <button class="tablinks" onclick="openTab(event, 'MatrixData')" id="defaultOpen">Matrix Data</button>
+        
+</div>
+
+<div id="MatrixData" class="tabcontent">
+<iframe height="900px" width="100%" src="matrix_data_viewer_273ab8bc-b5bf-4708-87c6-5fe01208be55.html" style="border:none;"></iframe>
+</div>
+
+        '''
         return tab_def_content + tab_content
 
     def _generate_matrix_html_report(self, matrix_df):
@@ -158,6 +185,7 @@ class DataTableUtil:
         return report_output
 
     def _fetch_matrix_df(self, input_matrix_ref, with_attribute_info):
+        #exit(input_matrix_ref)    44071/21/229
         logging.info('Start fetch matrix content')
 
         matrix_obj = self.dfu.get_objects({'object_refs': [input_matrix_ref]})['data'][0]
@@ -187,7 +215,16 @@ class DataTableUtil:
         matrix_df.index.name = 'ID'
         matrix_df.reset_index(inplace=True)
         matrix_df = matrix_df.astype(str)
+        #exit(matrix_df)
+        '''
+        SystemExit:          ID                        ...                                                                   taxonomy
+0  GG_OTU_1                        ...                          ['k__Bacteria', 'p__Proteobacteria', 'c__Gamma...
+1  GG_OTU_2                        ...                          ['k__Bacteria', 'p__Cyanobacteria', 'c__Nostoc...
+2  GG_OTU_3                        ...                          ['k__Archaea', 'p__Euryarchaeota', 'c__Methano...
+3  GG_OTU_4                        ...                          ['k__Bacteria', 'p__Firmicutes', 'c__Clostridi...
+4  GG_OTU_5                        ...                          ['k__Bacteria', 'p__Proteobacteria', 'c__Gamma...
 
+        '''
         return matrix_df
 
     def __init__(self, config):
