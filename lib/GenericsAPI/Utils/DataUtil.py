@@ -40,12 +40,15 @@ class DataUtil:
     def _filter_constraints(self, constraints, data):
         """filters out constraints with missing keys"""
         contains_constraints = constraints.get('contains')
+       # exit(contains_constraints)  [['data.row_ids', 'row_mapping'], ['data.col_ids', 'col_mapping'], ['values(row_mapping)', 'row_attributemapping_ref:instances'], ['values(col_mapping)', 'col_attributemapping_ref:instances']]
 
         filtered_constraints = []
         for contains_constraint in contains_constraints:
             in_values = contains_constraint[1:]
+            #exit(in_values)  ['row_mapping']
             missing_key = True
             for in_value in in_values:
+                # exit(in_value)  row_mapping
                 if in_value.startswith('values'):
                     search_value = re.search('{}(.*){}'.format('\(', '\)'), in_value).group(1)
                     unique_list = search_value.split('.')
@@ -62,23 +65,37 @@ class DataUtil:
 
             if missing_key:
                 filtered_constraints.append(contains_constraint)
+                
 
         for x in filtered_constraints:
             contains_constraints.remove(x)
-
+        #exit(constraints)  
+        '''
+        {'contains': [['data.row_ids', 'row_mapping'], ['data.col_ids', 'col_mapping'], ['values(row_mapping)', 'row_attributemapping_ref:instances'], ['values(col_mapping)', 'col_attributemapping_ref:instances']], 'rowsum': [], 'unique': [['data.row_ids'], ['data.col_ids']], 'conditionally_required': [['row_attributemapping_ref', 'row_mapping'], ['col_attributemapping_ref', 'col_mapping']]}
+        '''
         return constraints
 
     def _retrieve_value(self, data, value):
         """Parse the provided 'data' object to retrieve the item in 'value'."""
         logging.info('Getting value for {}'.format(value))
         retrieve_data = []
+        #exit(data)
+        '''
+        {'row_attributemapping_ref': '44071/19/157', 'row_mapping': {'GG_OTU_1': 'GG_OTU_1', 'GG_OTU_2': 'GG_OTU_2', 'GG_OTU_3': 'GG_OTU_3', 'GG_OTU_4': 'GG_OTU_4', 'GG_OTU_5': 'GG_OTU_5'}, 'col_attributemapping_ref': '44071/20/79', 'col_mapping': {'Sample1': 'Sample1', 'Sample2': 'Sample2', 'Sample3': 'Sample3', 'Sample4': 'Sample4', 'Sample5': 'Sample5', 'Sample6': 'Sample6'}, 'attributes': {'generated_by': 'QIIME revision XYZ'}, 'data': {'row_ids': ['GG_OTU_1', 'GG_OTU_2', 'GG_OTU_3', 'GG_OTU_4', 'GG_OTU_5'], 'col_ids': ['Sample1', 'Sample2', 'Sample3', 'Sample4', 'Sample5', 'Sample6'], 'values': [[0.0, 0.0, 1.0, 0.0, 0.0, 0.0], [5.0, 1.0, 0.0, 2.0, 3.0, 1.0], [0.0, 0.0, 1.0, 4.0, 2.0, 0.0], [2.0, 1.0, 1.0, 0.0, 0.0, 1.0], [0.0, 1.0, 1.0, 0.0, 0.0, 0.0]]}, 'search_attributes': ['generated_by|QIIME revision XYZ'], 'scale': 'raw', 'description': 'OTU data'}
+        ''' 
         m_data = DotMap(data)
+        #exit(m_data)  
+        '''
+        DotMap(row_attributemapping_ref='44071/19/158', row_mapping=DotMap(GG_OTU_1='GG_OTU_1', GG_OTU_2='GG_OTU_2', GG_OTU_3='GG_OTU_3', GG_OTU_4='GG_OTU_4', GG_OTU_5='GG_OTU_5'), col_attributemapping_ref='44071/20/80', col_mapping=DotMap(Sample1='Sample1', Sample2='Sample2', Sample3='Sample3', Sample4='Sample4', Sample5='Sample5', Sample6='Sample6'), attributes=DotMap(generated_by='QIIME revision XYZ'), data=DotMap(row_ids=['GG_OTU_1', 'GG_OTU_2', 'GG_OTU_3', 'GG_OTU_4', 'GG_OTU_5'], col_ids=['Sample1', 'Sample2', 'Sample3', 'Sample4', 'Sample5', 'Sample6'], values=[[0.0, 0.0, 1.0, 0.0, 0.0, 0.0], [5.0, 1.0, 0.0, 2.0, 3.0, 1.0], [0.0, 0.0, 1.0, 4.0, 2.0, 0.0], [2.0, 1.0, 1.0, 0.0, 0.0, 1.0], [0.0, 1.0, 1.0, 0.0, 0.0, 0.0]]), search_attributes=['generated_by|QIIME revision XYZ'], scale='raw', description='OTU data')
+        '''
+        #exit(value) data.row_ids
         if value.startswith('set('):
             retrieve_data = value[4:-1].split(",")
         elif value.startswith('values('):  # TODO: nested values e.g. values(values(ids))
             search_value = re.search('{}(.*){}'.format('\(', '\)'), value).group(1)
             unique_list = search_value.split('.')
             m_data_cp = m_data.copy()
+
             for attr in unique_list:
                 m_data_cp = getattr(m_data_cp, attr)
             retrieve_data = list(m_data_cp.values())
@@ -105,27 +122,34 @@ class DataUtil:
             for attr in unique_list:
                 m_data_cp = getattr(m_data_cp, attr)
             retrieve_data = list(m_data_cp)
-
+        
         logging.info('Retrieved value (first 20):\n{}\n'.format(retrieve_data[:20]))
+        #exit(retrieve_data)   ['GG_OTU_1', 'GG_OTU_2', 'GG_OTU_3', 'GG_OTU_4', 'GG_OTU_5']
 
         return retrieve_data
 
     def _validate(self, constraints, data):
         """
         _validate: validate data
-        """
-
+        """  
+        #exit(constraints)
+        '''
+        {'contains': [['data.row_ids', 'row_mapping'], ['data.col_ids', 'col_mapping'], ['values(row_mapping)', 'row_attributemapping_ref:instances'], ['values(col_mapping)', 'col_attributemapping_ref:instances']], 'rowsum': [], 'unique': [['data.row_ids'], ['data.col_ids']], 'conditionally_required': [['row_attributemapping_ref', 'row_mapping'], ['col_attributemapping_ref', 'col_mapping']]}
+        '''
         validated = True
         failed_constraints = defaultdict(list)
-
+        
         unique_constraints = constraints.get('unique')
+        #exit(unique_constraints)  [['data.row_ids'], ['data.col_ids']]
         for unique_constraint in unique_constraints:
             retrieved_value = self._retrieve_value(data, unique_constraint[0])
-            if len(set(retrieved_value)) != len(retrieved_value):
+            #exit(retrieved_value)  ['GG_OTU_1', 'GG_OTU_2', 'GG_OTU_3', 'GG_OTU_4', 'GG_OTU_5']
+            if len(set(retrieved_value)) != len(retrieved_value):  
                 validated = False
                 failed_constraints['unique'].append(unique_constraint[0])
 
         contains_constraints = constraints.get('contains')
+        #exit(contains_constraints) [['data.row_ids', 'row_mapping'], ['data.col_ids', 'col_mapping'], ['values(row_mapping)', 'row_attributemapping_ref:instances'], ['values(col_mapping)', 'col_attributemapping_ref:instances']]
         for contains_constraint in contains_constraints:
             value = contains_constraint[0]
             in_values = contains_constraint[1:]
@@ -137,6 +161,7 @@ class DataUtil:
                 failed_constraints['contains'].append(" ".join(contains_constraint))
 
         conditional_constraints = constraints.get('conditionally_required')
+        #exit(conditional_constraints)  [['row_attributemapping_ref', 'row_mapping'], ['col_attributemapping_ref', 'col_mapping']]
         for conditional_constraint in conditional_constraints:
             trigger = conditional_constraint[0]
             required_keys = conditional_constraint[1:]
@@ -177,6 +202,7 @@ class DataUtil:
         for failure in failed_constraints.get('conditionally_required', []):
             error_msg.append('If object field "{}" is present than object field(s) {} should '
                              'also be present. Object is missing {}'.format(*failure))
+       
         raise ValueError('\n'.join(error_msg))
 
     def __init__(self, config):
@@ -205,6 +231,7 @@ class DataUtil:
         return returnVal
 
     def fetch_data(self, params):
+        #exit(params) {'obj_ref': '44071/21/241'}
         """
         fetch_data: fetch generics data as pandas dataframe for a generics data object
 
@@ -228,7 +255,7 @@ class DataUtil:
         for p in ['obj_ref']:
             if p not in params:
                 raise ValueError('"{}" parameter is required, but missing'.format(p))
-
+        #exit(self.generics_service.fetch_data(params))  {'data_matrix': '{"Sample1":{"GG_OTU_1":0.0,"GG_OTU_2":5.0,"GG_OTU_3":0.0,"GG_OTU_4":2.0,"GG_OTU_5":0.0},"Sample2":{"GG_OTU_1":0.0,"GG_OTU_2":1.0,"GG_OTU_3":0.0,"GG_OTU_4":1.0,"GG_OTU_5":1.0},"Sample3":{"GG_OTU_1":1.0,"GG_OTU_2":0.0,"GG_OTU_3":1.0,"GG_OTU_4":1.0,"GG_OTU_5":1.0},"Sample4":{"GG_OTU_1":0.0,"GG_OTU_2":2.0,"GG_OTU_3":4.0,"GG_OTU_4":0.0,"GG_OTU_5":0.0},"Sample5":{"GG_OTU_1":0.0,"GG_OTU_2":3.0,"GG_OTU_3":2.0,"GG_OTU_4":0.0,"GG_OTU_5":0.0},"Sample6":{"GG_OTU_1":0.0,"GG_OTU_2":1.0,"GG_OTU_3":0.0,"GG_OTU_4":1.0,"GG_OTU_5":0.0}}'}
         return self.generics_service.fetch_data(params)
 
     def validate_data(self, params):
@@ -287,7 +314,7 @@ class DataUtil:
         if not validate.get('validated'):
             self._raise_validation_error(params, validate)
 
-        workspace_name = params.get('workspace_name')
+        workspace_name = params.get('workspace_name') 
         if not isinstance(workspace_name, int):
             ws_name_id = self.dfu.ws_name_to_id(workspace_name)
         else:
