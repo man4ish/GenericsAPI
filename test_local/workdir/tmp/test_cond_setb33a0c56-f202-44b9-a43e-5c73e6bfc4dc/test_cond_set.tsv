@@ -1,3 +1,0 @@
-attribute	attribute_ont_id	attribute_ont_ref	source	unit	unit_ont_id	unit_ont_ref	S1	S2	S3	S4	S5	S6	S7	S8	S9
-Time series design	OBI_0500020		upload	Hour	UO:0000032	KbaseOntologies/unit_ontology	0	0	0	2	2	2	0	0	0
-Treatment with Sirolimus	CHEBI:9168	KbaseOntologies/chebi_ontology	upload	nanogram per milliliter	UO:0000275	KbaseOntologies/unit_ontology	0	0	0	0	0	0	200	200	200

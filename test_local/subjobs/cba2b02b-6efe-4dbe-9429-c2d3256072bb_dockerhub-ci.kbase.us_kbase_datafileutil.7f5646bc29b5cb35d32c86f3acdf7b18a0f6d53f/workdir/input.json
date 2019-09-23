@@ -1,1 +1,0 @@
-{"id":"7430712497231992","method":"DataFileUtil.shock_to_file","params":[{"shock_id":"5a0a2737-f91f-415c-9fab-a8a36e933cc7","file_path":"/kb/module/work/tmp/export_matrix_result","unpack":"unpack"}],"version":"1.1","context":{"call_stack":[{"time":"2019-09-14T03:12:37+0000","method":"DataFileUtil._shock_to_file_submit"}],"service_ver":"release"}}

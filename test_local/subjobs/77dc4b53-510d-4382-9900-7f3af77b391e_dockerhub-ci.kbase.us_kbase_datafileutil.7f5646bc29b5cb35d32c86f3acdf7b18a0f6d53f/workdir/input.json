@@ -1,1 +1,0 @@
-{"id":"5299806022744519","method":"DataFileUtil.file_to_shock","params":[{"file_path":"/kb/module/work/tmp/genome-upload-staging-8e3edd21-12ab-4cb7-ab37-6dd13a0aa98e/combined/minimal.gbff","make_handle":1,"pack":"gzip"}],"version":"1.1","context":{"call_stack":[{"time":"2019-09-14T03:09:47+0000","method":"DataFileUtil._file_to_shock_submit"}],"service_ver":"release"}}

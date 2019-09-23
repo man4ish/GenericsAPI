@@ -1,1 +1,0 @@
-{"id":"5655784390751185","method":"DataFileUtil.file_to_shock","params":[{"file_path":"/kb/module/work/tmp/f768f557-2811-46b3-a473-ab2932f7cb94/test_fitness_matrix.xlsx","pack":"zip"}],"version":"1.1","context":{"call_stack":[{"time":"2019-09-14T03:13:08+0000","method":"DataFileUtil._file_to_shock_submit"}],"service_ver":"release"}}

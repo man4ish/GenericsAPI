@@ -100,14 +100,19 @@ class PCAUtil:
         """
         logging.info('converting pca matrix to data frame')
         pca_data = self.dfu.get_objects({'object_refs': [pca_matrix_ref]})['data'][0]['data']
-
+       
         rotation_matrix_data = pca_data.get('rotation_matrix')
+        # exit(rotation_matrix_data)   {'col_ids': ['principal_component_1', 'principal_component_2'], 'row_ids': ['WRI_RS00010_CDS_1', 'WRI_RS00015_CDS_1', 'WRI_RS00025_CDS_1'], 'values': [[-0.45, 1.06], [-0.69, -0.92], [1.14, -0.13]]}
         components_matrix_data = pca_data.get('components_matrix')
-
+        
         explained_variance = pca_data.get('explained_variance')
+        #exit(explained_variance) [0.628769688409428, 0.371230311590572]
         explained_variance_ratio = pca_data.get('explained_variance_ratio')
+        #exit(explained_variance_ratio) [0.628769688409428, 0.371230311590572] 
         singular_values = pca_data.get('singular_values')
-        dimension = pca_data.get('pca_parameters').get('dimension')
+        #exit(singular_values)
+        dimension = pca_data.get('pca_parameters').get('dimension') 
+        
         original_matrix_ref = pca_data.get('original_matrix_ref')
 
         pca_df = self._Matrix2D_to_df(rotation_matrix_data)
@@ -302,7 +307,7 @@ class PCAUtil:
         else:
             # append instance col mapping from row/col_mapping
             plot_pca_matrix['instance'] = plot_pca_matrix.index.map(attribute_mapping)
-
+        #exit(plot_pca_matrix)
         return plot_pca_matrix
 
     def _build_size_pca_matrix(self, plot_pca_matrix, obj_data, dimension, attribute_name):
@@ -406,7 +411,16 @@ class PCAUtil:
         return plot_pca_matrix
 
     def _build_2_comp_trace(self, plot_pca_matrix, components_x, components_y):
+        #exit(plot_pca_matrix)
+        '''
+        principal_component_1          ...           attribute_value_size
+        WRI_RS00010_CDS_1              -0.853094          ...                              1
+        WRI_RS00015_CDS_1              -0.247377          ...                              3
+        WRI_RS00025_CDS_1               1.100471          ...                              3
 
+        '''
+        #exit(components_x)  principal_component_1
+        #exit(components_y)  principal_component_2
         traces = []
 
         if 'attribute_value_color' in plot_pca_matrix.columns and 'attribute_value_size' in plot_pca_matrix.columns:
@@ -590,7 +604,13 @@ class PCAUtil:
             plot_pca_matrix = self._build_color_pca_matrix(
                                             plot_pca_matrix, obj_data, dimension,
                                             params.get('color_marker_by').get('attribute_color')[0])
-
+        #exit(plot_pca_matrix)  
+        '''
+        principal_component_1          ...            attribute_value_color
+        WRI_RS00010_CDS_1              -0.853094          ...                                4
+        WRI_RS00015_CDS_1              -0.247377          ...                                4
+        WRI_RS00025_CDS_1               1.100471          ...                                6
+        ''' 
         if params.get('scale_size_by'):
             plot_pca_matrix = self._build_size_pca_matrix(
                                             plot_pca_matrix, obj_data, dimension,
@@ -605,7 +625,6 @@ class PCAUtil:
                                                   n_components)
 
         returnVal.update(report_output)
-
         return returnVal
 
     def export_pca_matrix_excel(self, params):
@@ -613,12 +632,19 @@ class PCAUtil:
         export PCAMatrix as Excel
         """
         logging.info('start exporting pca matrix')
-        pca_matrix_ref = params.get('input_ref')
-
+        pca_matrix_ref = params.get('input_ref')  #44071/62/8
         pca_df, components_df = self._pca_to_df(pca_matrix_ref)
-
+        
+        #exit(pca_df)
+        '''
+        principal_component_1  principal_component_2
+        WRI_RS00010_CDS_1                  -0.45                   1.06
+        WRI_RS00015_CDS_1                  -0.69                  -0.92
+        WRI_RS00025_CDS_1                   1.14                  -0.13
+        '''
         result_dir = os.path.join(self.scratch, str(uuid.uuid4()))
         self._mkdir_p(result_dir)
+        #exit(result_dir)                       #/kb/module/work/tmp/54e9610e-9b51-4296-a971-333f9f154a1f
 
         self._pca_df_to_excel(pca_df, components_df, result_dir, pca_matrix_ref)
 
