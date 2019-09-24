@@ -277,7 +277,7 @@ class MatrixUtil:
         return attr_data
 
     @staticmethod
-    def _build_header_str(attribute_names):
+    def _build_header_str(attribute_names):   #not going to be used
 
         header_str = ''
         width = 100.0/len(attribute_names)
@@ -292,7 +292,7 @@ class MatrixUtil:
 
         return header_str
 
-    def _build_html_str(self, row_mapping, attributemapping_data, row_ids):
+    def _build_html_str(self, row_mapping, attributemapping_data, row_ids):  #not going to be used
 
         logging.info('Start building html replacement')
 
@@ -480,7 +480,7 @@ class MatrixUtil:
         return {'new_matrix_obj_ref': new_matrix_obj_ref,
                 'report_name': output['name'], 'report_ref': output['ref']}
 
-    def filter_matrix(self, params):
+    def filter_matrix(self, params):         #not going to be used
         """
         filter_matrix: create sub-matrix based on input feature_ids
 
@@ -542,7 +542,7 @@ class MatrixUtil:
 
         return returnVal
 
-    def search_matrix(self, params):
+    def search_matrix(self, params):    #not going to be used
         """
         search_matrix: generate a HTML report that allows users to select feature ids
 
