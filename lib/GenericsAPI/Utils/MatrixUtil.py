@@ -8,7 +8,7 @@ import uuid
 import time
 
 import pandas as pd
-from openpyxl import load_workbook
+from openpyxl import load_workbook  #load workbook function for reading xls
 from xlrd.biffh import XLRDError
 from sklearn import preprocessing
 
@@ -317,7 +317,7 @@ class MatrixUtil:
 
         return header_str, table_str
 
-    def _generate_search_html_report(self, header_str, table_str):
+    def _generate_search_html_report(self, header_str, table_str):   #generate search html report
 
         html_report = list()
 
@@ -393,7 +393,7 @@ class MatrixUtil:
 
         return filtered_value_data
 
-    def _standardize_df(self, df, with_mean=True, with_std=True):
+    def _standardize_df(self, df, with_mean=True, with_std=True):    
 
         logging.info("Standardizing matrix data")
 
