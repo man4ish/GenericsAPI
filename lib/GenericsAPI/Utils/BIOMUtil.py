@@ -36,6 +36,99 @@ class BiomUtil:
                 pass
             else:
                 raise
+    def __init__(self, config):
+        self.callback_url = config['SDK_CALLBACK_URL']
+        self.scratch = config['scratch']
+        self.token = config['KB_AUTH_TOKEN']
+        self.dfu = DataFileUtil(self.callback_url)
+        self.data_util = DataUtil(config)
+        self.attr_util = AttributesUtil(config)
+        self.matrix_util = MatrixUtil(config)
+        self.matrix_types = [x.split(".")[1].split('-')[0]
+                             for x in self.data_util.list_generic_types()]
+        self.taxon_wsname = config['taxon-workspace-name']
+        self.kbse = KBaseSearchEngine(config['search-url'])
+
+    def import_matrix_from_biom(self, params):
+        """
+        arguments:
+        obj_type: one of ExpressionMatrix, FitnessMatrix, DifferentialExpressionMatrix
+        matrix_name: matrix object name
+        workspace_name: workspace name matrix object to be saved to
+        input_shock_id: file shock id
+        or
+        input_file_path: absolute file path
+        or
+        input_staging_file_path: staging area file path
+
+        optional arguments:
+        col_attributemapping_ref: column AttributeMapping reference
+        row_attributemapping_ref: row AttributeMapping reference
+        genome_ref: genome reference
+        matrix_obj_ref: Matrix reference
+        """
+        #exit(params)  {'obj_type': 'AmpliconMatrix', 'matrix_name': 'test_AmpliconMatrix', 'workspace_name': 'man4ish_gupta:narrative_1568644342277', 'biom_fasta': {'biom_file_biom_fasta': 'data/phyloseq_test.biom', 'fasta_file_biom_fasta': 'data/phyloseq_test.fa'}, 'scale': 'raw', 'description': 'OTU data', 'amplicon_set_name': 'test_AmpliconSet', 'col_attributemapping_ref': '44071/33/54'}
+
+        (biom_file, tsv_file, fasta_file, mode, metadata_keys) = self._process_params(params)
+
+        workspace_name = params.get('workspace_name')
+        matrix_name = params.get('matrix_name')
+        amplicon_set_name = params.get('amplicon_set_name')
+        obj_type = params.get('obj_type')
+        scale = params.get('scale')
+        description = params.get('description')
+        refs = {k: v for k, v in params.items() if "_ref" in k}
+
+        if not isinstance(workspace_name, int):
+            workspace_id = self.dfu.ws_name_to_id(workspace_name)
+        else:
+            workspace_id = workspace_name
+
+        amplicon_data = self._file_to_amplicon_data(biom_file, tsv_file, mode, refs, matrix_name,
+                                                    workspace_id, scale, description, metadata_keys)
+
+        new_row_attr_ref = None
+        if not params.get('row_attributemapping_ref'):
+            new_row_attr_ref = amplicon_data.get('row_attributemapping_ref')
+
+        new_col_attr_ref = None
+        if not params.get('col_attributemapping_ref'):
+            new_col_attr_ref = amplicon_data.get('col_attributemapping_ref')
+
+        logging.info('start saving Matrix object: {}'.format(matrix_name))
+        matrix_obj_ref = self.data_util.save_object({
+                                                'obj_type': 'KBaseMatrices.{}'.format(obj_type),
+                                                'obj_name': matrix_name,
+                                                'data': amplicon_data,
+                                                'workspace_name': workspace_id})['obj_ref']
+
+        amplicon_set_data = self._file_to_amplicon_set_data(biom_file, tsv_file, fasta_file, mode,
+                                                            refs, description, matrix_obj_ref)
+
+        logging.info('start saving AmpliconSet object: {}'.format(amplicon_set_name))
+        amplicon_set_obj_ref = self.data_util.save_object({
+                                                'obj_type': 'KBaseExperiments.AmpliconSet',
+                                                'obj_name': amplicon_set_name,
+                                                'data': amplicon_set_data,
+                                                'workspace_name': workspace_id})['obj_ref']
+
+        logging.info('start resaving Matrix object with amplicon set: {}'.format(matrix_name))
+        amplicon_data['amplicon_set_ref'] = '{}/{}'.format(workspace_id, amplicon_set_name)
+        matrix_obj_ref = self.data_util.save_object({
+                                                'obj_type': 'KBaseMatrices.{}'.format(obj_type),
+                                                'obj_name': matrix_name,
+                                                'data': amplicon_data,
+                                                'workspace_name': workspace_id})['obj_ref']
+
+        returnVal = {'matrix_obj_ref': matrix_obj_ref,
+                     'amplicon_set_obj_ref': amplicon_set_obj_ref}
+
+        report_output = self._generate_report(matrix_obj_ref, amplicon_set_obj_ref,
+                                              new_row_attr_ref, new_col_attr_ref, workspace_name)
+
+        returnVal.update(report_output)
+
+        return returnVal
 
     def _process_params(self, params):
         logging.info('start validating import_matrix_from_biom params')
@@ -126,6 +219,9 @@ class BiomUtil:
 
     def _retrieve_value(self, biom_metadata_dict, tsv_metadata_df, key, required=False):
 
+        #exit(tsv_metadata_df)  defaultdict(<function Table._cast_metadata.<locals>.cast_metadata.<locals>.<lambda> at 0x7fdb3037f378>, {'taxonomy': ['k__Bacteria', 'p__Proteobacteria', 'c__Gammaproteobacteria', 'o__Enterobacteriales', 'f__Enterobacteriaceae', 'g__Escherichia', 's__']})
+        #exit(key) taxonomy
+        #exit(biom_metadata_dict) none
         if key in biom_metadata_dict:
             return {k.lower(): v for k, v in biom_metadata_dict.items()}.get(key)
         elif key in tsv_metadata_df:
@@ -169,7 +265,7 @@ class BiomUtil:
             objects = self.kbse.search_objects(search_params)['objects']
         if objects:
             taxon_id = objects[0].get('object_name')
-
+        #exit(taxon_id)  561_taxon
         return taxon_id
 
     def _fetch_taxon_level(self, taxon_char):
@@ -180,11 +276,13 @@ class BiomUtil:
         return taxon_level_mapping.get(taxon_char[0].lower(), 'Unknown')
 
     def _fetch_taxonomy(self, datarow):
+        #exit(datarow) defaultdict(<function Table._cast_metadata.<locals>.cast_metadata.<locals>.<lambda> at 0x7f7ca8e8d950>, {'taxonomy': ['k__Bacteria', 'p__Proteobacteria', 'c__Gammaproteobacteria', 'o__Enterobacteriales', 'f__Enterobacteriaceae', 'g__Escherichia', 's__']})
         lineage = self._retrieve_value([], datarow, 'taxonomy')
+        #exit(lineage)  ['k__Bacteria', 'p__Proteobacteria', 'c__Gammaproteobacteria', 'o__Enterobacteriales', 'f__Enterobacteriaceae', 'g__Escherichia', 's__']
         if isinstance(lineage, str):
             delimiter = csv.Sniffer().sniff(lineage).delimiter
             lineage = [x.strip() for x in lineage.split(delimiter)]
-
+            #exit(lineage)  ['k__Bacteria', 'k__Bacteria']
         taxonomy = {'lineage': lineage}
         
 
@@ -192,7 +290,7 @@ class BiomUtil:
             val = self._retrieve_value([], datarow, key)
             if val:
                 taxonomy[key] = val
-
+        #exit(key) species_name
         for item in lineage[::-1]:
             scientific_name = item.split('_')[-1]
             taxon_level_char = item.split('_')[0]
@@ -207,6 +305,7 @@ class BiomUtil:
                                      'scientific_name': scientific_name,
                                      'taxon_level': taxon_level})
                     break
+        #exit(taxonomy) {'lineage': ['k__Bacteria', 'p__Proteobacteria', 'c__Gammaproteobacteria', 'o__Enterobacteriales', 'f__Enterobacteriaceae', 'g__Escherichia', 's__'], 'taxon_ref': 'ReferenceTaxons/561_taxon', 'taxon_id': '561_taxon', 'scientific_name': 'Escherichia', 'taxon_level': 'Genus'}
         return taxonomy
 
     def _retrieve_tsv_amplicon_set_data(self, tsv_file):              #tsv file is data/amplicon_test.tsv
@@ -466,8 +565,18 @@ class BiomUtil:
 
     def get_attribute_mapping(self, axis, metadata, matrix_data, matrix_name, refs,  workspace_id,
                               metadata_df=None):
+        #exit(metadata)
+        '''
+        (defaultdict(<function Table._cast_metadata.<locals>.cast_metadata.<locals>.<lambda> at 0x7fbe35faf730>, {'taxonomy': ['k__Bacteria', 'p__Proteobacteria', 'c__Gammaproteobacteria', 'o__Enterobacteriales', 'f__Enterobacteriaceae', 'g__Escherichia', 's__']}), defaultdict(<function Table._cast_metadata.<locals>.cast_metadata.<locals>.<lambda> at 0x7fbe35faf9d8>, {'taxonomy': ['k__Bacteria', 'p__Cyanobacteria', 'c__Nostocophycideae', 'o__Nostocales', 'f__Nostocaceae', 'g__Dolichospermum', 's__']}), defaultdict(<function Table._cast_metadata.<locals>.cast_metadata.<locals>.<lambda> at 0x7fbe35faf6a8>, {'taxonomy': ['k__Archaea', 'p__Euryarchaeota', 'c__Methanomicrobia', 'o__Methanosarcinales', 'f__Methanosarcinaceae', 'g__Methanosarcina', 's__']}), defaultdict(<function Table._cast_metadata.<locals>.cast_metadata.<locals>.<lambda> at 0x7fbe35fafd08>, {'taxonomy': ['k__Bacteria', 'p__Firmicutes', 'c__Clostridia', 'o__Halanaerobiales', 'f__Halanaerobiaceae', 'g__Halanaerobium', 's__Halanaerobiumsaccharolyticum']}), defaultdict(<function Table._cast_metadata.<locals>.cast_metadata.<locals>.<lambda> at 0x7fbe35fafea0>, {'taxonomy': ['k__Bacteria', 'p__Proteobacteria', 'c__Gammaproteobacteria', 'o__Enterobacteriales', 'f__Enterobacteriaceae', 'g__Escherichia', 's__']}))
+
+        '''
+
+        #exit(matrix_data)  {'row_ids': ['GG_OTU_1', 'GG_OTU_2', 'GG_OTU_3', 'GG_OTU_4', 'GG_OTU_5'], 'col_ids': ['Sample1', 'Sample2', 'Sample3', 'Sample4', 'Sample5', 'Sample6'], 'values': [[0.0, 0.0, 1.0, 0.0, 0.0, 0.0], [5.0, 1.0, 0.0, 2.0, 3.0, 1.0], [0.0, 0.0, 1.0, 4.0, 2.0, 0.0], [2.0, 1.0, 1.0, 0.0, 0.0, 1.0], [0.0, 1.0, 1.0, 0.0, 0.0, 0.0]]}
+        #exit(matrix_name) test_AmpliconMatrix
+        #exit(refs)  {'col_attributemapping_ref': '44071/33/51'}
         mapping_data = {}
         axis_ids = matrix_data[f'{axis}_ids']
+        #exit(axis_ids)  ['GG_OTU_1', 'GG_OTU_2', 'GG_OTU_3', 'GG_OTU_4', 'GG_OTU_5']
         if refs.get(f'{axis}_attributemapping_ref'):
             am_data = self.dfu.get_objects(
                 {'object_refs': [refs[f'{axis}_attributemapping_ref']]}
@@ -567,7 +676,7 @@ class BiomUtil:
         #{'report_name': 'import_matrix_from_biom_db306341-c03a-4e60-b8a4-2bd7f6a48925', 'report_ref': '44071/200/1'}
         return report_output
 
-    def _df_to_tsv(self, amplicon_set_df, result_dir, amplicon_set_ref):
+    def _df_to_tsv(self, amplicon_set_df, result_dir, amplicon_set_ref):    #not going to be used anywhere
         logging.info('writting amplicon set data frame to tsv file')
         amplicon_set_obj = self.dfu.get_objects({'object_refs': [amplicon_set_ref]})['data'][0]
         amplicon_set_info = amplicon_set_obj['info']
@@ -579,7 +688,7 @@ class BiomUtil:
 
         return file_path
 
-    def _amplicon_set_to_df(self, amplicon_set_ref):
+    def _amplicon_set_to_df(self, amplicon_set_ref):                       #not going to be used anywhere
         logging.info('converting amplicon set to data frame')
         am_set_data = self.dfu.get_objects({'object_refs': [amplicon_set_ref]})['data'][0]['data']
 
@@ -624,101 +733,8 @@ class BiomUtil:
                              validate='one_to_one')
         
         return merged_df
-
-    def __init__(self, config):
-        self.callback_url = config['SDK_CALLBACK_URL']
-        self.scratch = config['scratch']
-        self.token = config['KB_AUTH_TOKEN']
-        self.dfu = DataFileUtil(self.callback_url)
-        self.data_util = DataUtil(config)
-        self.attr_util = AttributesUtil(config)
-        self.matrix_util = MatrixUtil(config)
-        self.matrix_types = [x.split(".")[1].split('-')[0]
-                             for x in self.data_util.list_generic_types()]
-        self.taxon_wsname = config['taxon-workspace-name']
-        self.kbse = KBaseSearchEngine(config['search-url'])
-
-    def import_matrix_from_biom(self, params):
-        """
-        arguments:
-        obj_type: one of ExpressionMatrix, FitnessMatrix, DifferentialExpressionMatrix
-        matrix_name: matrix object name
-        workspace_name: workspace name matrix object to be saved to
-        input_shock_id: file shock id
-        or
-        input_file_path: absolute file path
-        or
-        input_staging_file_path: staging area file path
-
-        optional arguments:
-        col_attributemapping_ref: column AttributeMapping reference
-        row_attributemapping_ref: row AttributeMapping reference
-        genome_ref: genome reference
-        matrix_obj_ref: Matrix reference
-        """
-
-        (biom_file, tsv_file, fasta_file, mode, metadata_keys) = self._process_params(params)
-
-        workspace_name = params.get('workspace_name')
-        matrix_name = params.get('matrix_name')
-        amplicon_set_name = params.get('amplicon_set_name')
-        obj_type = params.get('obj_type')
-        scale = params.get('scale')
-        description = params.get('description')
-        refs = {k: v for k, v in params.items() if "_ref" in k}
-
-        if not isinstance(workspace_name, int):
-            workspace_id = self.dfu.ws_name_to_id(workspace_name)
-        else:
-            workspace_id = workspace_name
-
-        amplicon_data = self._file_to_amplicon_data(biom_file, tsv_file, mode, refs, matrix_name,
-                                                    workspace_id, scale, description, metadata_keys)
-
-        new_row_attr_ref = None
-        if not params.get('row_attributemapping_ref'):
-            new_row_attr_ref = amplicon_data.get('row_attributemapping_ref')
-
-        new_col_attr_ref = None
-        if not params.get('col_attributemapping_ref'):
-            new_col_attr_ref = amplicon_data.get('col_attributemapping_ref')
-
-        logging.info('start saving Matrix object: {}'.format(matrix_name))
-        matrix_obj_ref = self.data_util.save_object({
-                                                'obj_type': 'KBaseMatrices.{}'.format(obj_type),
-                                                'obj_name': matrix_name,
-                                                'data': amplicon_data,
-                                                'workspace_name': workspace_id})['obj_ref']
-
-        amplicon_set_data = self._file_to_amplicon_set_data(biom_file, tsv_file, fasta_file, mode,
-                                                            refs, description, matrix_obj_ref)
-
-        logging.info('start saving AmpliconSet object: {}'.format(amplicon_set_name))
-        amplicon_set_obj_ref = self.data_util.save_object({
-                                                'obj_type': 'KBaseExperiments.AmpliconSet',
-                                                'obj_name': amplicon_set_name,
-                                                'data': amplicon_set_data,
-                                                'workspace_name': workspace_id})['obj_ref']
-
-        logging.info('start resaving Matrix object with amplicon set: {}'.format(matrix_name))
-        amplicon_data['amplicon_set_ref'] = '{}/{}'.format(workspace_id, amplicon_set_name)
-        matrix_obj_ref = self.data_util.save_object({
-                                                'obj_type': 'KBaseMatrices.{}'.format(obj_type),
-                                                'obj_name': matrix_name,
-                                                'data': amplicon_data,
-                                                'workspace_name': workspace_id})['obj_ref']
-
-        returnVal = {'matrix_obj_ref': matrix_obj_ref,
-                     'amplicon_set_obj_ref': amplicon_set_obj_ref}
-
-        report_output = self._generate_report(matrix_obj_ref, amplicon_set_obj_ref,
-                                              new_row_attr_ref, new_col_attr_ref, workspace_name)
-
-        returnVal.update(report_output)
-
-        return returnVal
-
-    def export_amplicon_set_tsv(self, params):
+   
+    def export_amplicon_set_tsv(self, params):   # not goign to be called anywhere
         """
         export AmpliconSet as TSV
         """
