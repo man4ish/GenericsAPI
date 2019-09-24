@@ -72,7 +72,11 @@ class CorrelationUtil:
                                             {'object_refs': [amplicon_set_ref]})['data'][0]['data']
 
         amplicons = amplicon_set_data.get('amplicons')
-        
+        #exit(amplicons)
+        '''
+        {'GG_OTU_1': {'consensus_sequence': 'ACTGACTAGCTAGCTAACTG', 'taxonomy': {'lineage': ['k__Bacteria', 'p__Proteobacteria', 'c__Gammaproteobacteria', 'o__Enterobacteriales', 'f__Enterobacteriaceae', 'g__Escherichia', 's__'], 'scientific_name': 'Escherichia', 'taxon_id': '561_taxon', 'taxon_level': 'Genus', 'taxon_ref': '1779/125680/3'}}, 'GG_OTU_2': {'consensus_sequence': 'GCATCGTAGCTAGCTACGAT', 'taxonomy': {'lineage': ['k__Bacteria', 'p__Cyanobacteria', 'c__Nostocophycideae', 'o__Nostocales', 'f__Nostocaceae', 'g__Dolichospermum', 's__'], 'scientific_name': 'Dolichospermum', 'taxon_id': '748770_taxon', 'taxon_level': 'Genus', 'taxon_ref': '1779/100716/3'}}, 'GG_OTU_3': {'consensus_sequence': 'CATCGATCGTACGTACGTAG', 'taxonomy': {'lineage': ['k__Archaea', 'p__Euryarchaeota', 'c__Methanomicrobia', 'o__Methanosarcinales', 'f__Methanosarcinaceae', 'g__Methanosarcina', 's__'], 'scientific_name': 'Methanosarcina', 'taxon_id': '2207_taxon', 'taxon_level': 'Genus', 'taxon_ref': '1779/147440/3'}}, 'GG_OTU_4': {'consensus_sequence': 'ATCGATCGATCGTACGATCG', 'taxonomy': {'lineage': ['k__Bacteria', 'p__Firmicutes', 'c__Clostridia', 'o__Halanaerobiales', 'f__Halanaerobiaceae', 'g__Halanaerobium', 's__Halanaerobiumsaccharolyticum'], 'scientific_name': 'Halanaerobium', 'taxon_id': '2330_taxon', 'taxon_level': 'Genus', 'taxon_ref': '1779/149756/3'}}, 'GG_OTU_5': {'consensus_sequence': 'ATCGATCGATCGTACGATCG', 'taxonomy': {'lineage': ['k__Bacteria', 'p__Proteobacteria', 'c__Gammaproteobacteria', 'o__Enterobacteriales', 'f__Enterobacteriaceae', 'g__Escherichia', 's__'], 'scientific_name': 'Escherichia', 'taxon_id': '561_taxon', 'taxon_level': 'Genus', 'taxon_ref': '1779/125680/3'}}}idx_5  57.019677  43.860151  98.837384  10.204481  20.887676  16.130952  65.310833  25.329160  46.631077  24.442559
+        '''       
+        #exit(amplicon_ids)  ['GG_OTU_1', 'GG_OTU_2', 'GG_OTU_3', 'GG_OTU_4', 'GG_OTU_5']
         for amplicon_id in amplicon_ids:
             scientific_name = 'None'
             level = 'Unknown'
@@ -95,6 +99,7 @@ class CorrelationUtil:
 
         if set(taxons_level.values()) == {'Unknown'}:
             taxons_level = None
+        #exit(taxons_level)   {'GG_OTU_1': 'Genus', 'GG_OTU_2': 'Genus', 'GG_OTU_3': 'Genus', 'GG_OTU_4': 'Genus', 'GG_OTU_5': 'Genus'}
         
         return taxons, taxons_level
 
@@ -103,7 +108,7 @@ class CorrelationUtil:
         """
         _build_table_content: generate HTML table content for FloatMatrix2D object
         """
-
+        #exit(matrix_2D)  {'col_ids': ['gene_1', 'gene_2', 'gene_3'], 'row_ids': ['WRI_RS00010_CDS_1', 'WRI_RS00015_CDS_1', 'WRI_RS00025_CDS_1'], 'values': [[1.0, -0.5447, 0.9668], [1.0, -0.5447, 0.9668], [0.9668, -0.3124, 1.0]]}
         page_content = """\n"""
 
         table_file_name = '{}_table.html'.format(type)
@@ -145,9 +150,51 @@ class CorrelationUtil:
                 columns.append(matrix_type)
         else:
             links.columns = ['Variable 1', 'Variable 2']
+        #exit(links)
+        '''
+    level_0   level_1       0
+0   GG_OTU_1  GG_OTU_1  1.0000
+1   GG_OTU_1  GG_OTU_2 -0.5477
+2   GG_OTU_1  GG_OTU_3 -0.0510
+3   GG_OTU_1  GG_OTU_4  0.1085
+4   GG_OTU_1  GG_OTU_5  0.6325
+5   GG_OTU_2  GG_OTU_1 -0.5477
+6   GG_OTU_2  GG_OTU_2  1.0000
+7   GG_OTU_2  GG_OTU_3  0.0000
+8   GG_OTU_2  GG_OTU_4  0.2970
+9   GG_OTU_2  GG_OTU_5 -0.6495
+10  GG_OTU_3  GG_OTU_1 -0.0510
+11  GG_OTU_3  GG_OTU_2  0.0000
+12  GG_OTU_3  GG_OTU_3  1.0000
+13  GG_OTU_3  GG_OTU_4 -0.8015
+14  GG_OTU_3  GG_OTU_5 -0.3223
+15  GG_OTU_4  GG_OTU_1  0.1085
+16  GG_OTU_4  GG_OTU_2  0.2970
+17  GG_OTU_4  GG_OTU_3 -0.8015
+18  GG_OTU_4  GG_OTU_4  1.0000
+19  GG_OTU_4  GG_OTU_5  0.1715
+20  GG_OTU_5  GG_OTU_1  0.6325
+21  GG_OTU_5  GG_OTU_2 -0.6495
+22  GG_OTU_5  GG_OTU_3 -0.3223
+23  GG_OTU_5  GG_OTU_4  0.1715
+24  GG_OTU_5  GG_OTU_5  1.0000
 
+        '''
         # remove self-comparison
         links = links[links.iloc[:, 0] != links.iloc[:, 1]]
+        #exit(links)
+        '''
+   level_0            level_1       0
+0  gene_1  WRI_RS00010_CDS_1  1.0000
+1  gene_1  WRI_RS00015_CDS_1  1.0000
+2  gene_1  WRI_RS00025_CDS_1  0.9668
+3  gene_2  WRI_RS00010_CDS_1 -0.5447
+4  gene_2  WRI_RS00015_CDS_1 -0.5447
+5  gene_2  WRI_RS00025_CDS_1 -0.3124
+6  gene_3  WRI_RS00010_CDS_1  0.9668
+7  gene_3  WRI_RS00015_CDS_1  0.9668
+8  gene_3  WRI_RS00025_CDS_1  1.0000
+        '''
 
         if type == 'corr':
             columns.append('Correlation')
@@ -891,6 +938,13 @@ class CorrelationUtil:
         corr_matrix_ref = params.get('input_ref')
 
         coefficient_df, significance_df = self._corr_to_df(corr_matrix_ref)
+        #exit(coefficient_df)
+        '''
+        SystemExit:                    WRI_RS00010_CDS_1        ...          WRI_RS00025_CDS_1
+        WRI_RS00010_CDS_1               1.00        ...                       0.91*** starting test: test_init_ok **
+        WRI_RS00015_CDS_1               0.99        ...                       0.91
+        WRI_RS00025_CDS_1               0.91        ...                       1.00*** starting test: test_plot_corr_matrix_ok **
+        '''
 
         result_dir = os.path.join(self.scratch, str(uuid.uuid4()))
         self._mkdir_p(result_dir)
