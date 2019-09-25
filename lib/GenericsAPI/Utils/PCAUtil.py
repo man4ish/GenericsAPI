@@ -163,6 +163,7 @@ class PCAUtil:
         pca_data.update({'pca_parameters': {'n_components': str(n_components),
                                             'dimension': str(dimension)}})
         pca_data.update({'original_matrix_ref': input_obj_ref})
+        
 
         obj_type = 'KBaseExperiments.PCAMatrix'
         info = self.dfu.save_objects({
@@ -173,7 +174,7 @@ class PCAUtil:
                 "name": pca_matrix_name
             }]
         })[0]
-
+        
         return "%s/%s/%s" % (info[6], info[0], info[4])
 
     def _pca_for_matrix(self, input_obj_ref, n_components, dimension):
@@ -210,6 +211,7 @@ class PCAUtil:
 
         components = pca.components_
         singular_values = list(pca.singular_values_)
+        
 
         col = list()
         for i in range(n_components):
@@ -292,7 +294,7 @@ class PCAUtil:
 
     def _append_instance_group(self, plot_pca_matrix, obj_data, dimension):
         plot_pca_matrix = plot_pca_matrix.copy()
-
+        #exit(obj_data)  {'attributes': {'Instrument': 'Old Faithful', 'Scientist': 'Marie Currie'}, 'col_attributemapping_ref': '44071/7/79', 'col_mapping': {'instance_1': 'test_col_instance_1', 'instance_2': 'test_col_instance_2', 'instance_3': 'test_col_instance_3', 'instance_4': 'test_col_instance_4'}, 'col_normalization': 'test_col_normalization', 'data': {'col_ids': ['instance_1', 'instance_2', 'instance_3', 'instance_4'], 'row_ids': ['WRI_RS00010_CDS_1', 'WRI_RS00015_CDS_1', 'WRI_RS00025_CDS_1'], 'values': [[0.1, 0.2, 0.3, 0.4], [0.5, 0.6, 0.7, 0.8], [None, None, 1.1, 1.2]]}, 'description': 'test_desc', 'row_attributemapping_ref': '44071/8/71', 'row_mapping': {'WRI_RS00010_CDS_1': 'test_row_instance_1', 'WRI_RS00015_CDS_1': 'test_row_instance_2', 'WRI_RS00025_CDS_1': 'test_row_instance_3'}, 'row_normalization': 'test_row_normalization', 'scale': 'log2', 'search_attributes': ['Scientist | Marie Currie', 'Instrument | Old Faithful']}
         if dimension == 'row':
             attribute_mapping = obj_data.get('row_mapping')
         elif dimension == 'col':
@@ -307,7 +309,13 @@ class PCAUtil:
         else:
             # append instance col mapping from row/col_mapping
             plot_pca_matrix['instance'] = plot_pca_matrix.index.map(attribute_mapping)
-        #exit(plot_pca_matrix)
+            #exit(plot_pca_matrix)  
+            ''' principal_component_1         ...                      instance
+            WRI_RS00010_CDS_1              -0.853094         ...           test_row_instance_1
+            WRI_RS00015_CDS_1              -0.247377         ...           test_row_instance_2
+            WRI_RS00025_CDS_1               1.100471         ...           test_row_instance_3'''
+
+
         return plot_pca_matrix
 
     def _build_size_pca_matrix(self, plot_pca_matrix, obj_data, dimension, attribute_name):
@@ -333,6 +341,7 @@ class PCAUtil:
             return plot_pca_matrix
         else:
             # append instance col mapping from row/col_mapping
+            # exit(plot_pca_matrix.index.map(attribute_mapping))  Index(['test_row_instance_1', 'test_row_instance_2', 'test_row_instance_3'], dtype='object')
             plot_pca_matrix['instance'] = plot_pca_matrix.index.map(attribute_mapping)
 
         res = self.dfu.get_objects({'object_refs': [attribute_mapping_ref]})['data'][0]
@@ -340,6 +349,8 @@ class PCAUtil:
         attri_name = res['info'][1]
 
         attributes = attri_data.get('attributes')
+        #exit(attributes)  [{'attribute': 'test_attribute_1', 'attribute_ont_id': 'OBI_0500020', 'source': 'upload', 'unit': 'Hour', 'unit_ont_id': 'UO:0000032', 'unit_ont_ref': '6308/15/6'}, {'attribute': 'test_attribute_2', 'attribute_ont_id': 'CHEBI:9168', 'attribute_ont_ref': '6308/19/1', 'source': 'upload', 'unit': 'nanogram per milliliter', 'unit_ont_id': 'UO:0000275', 'unit_ont_ref': '6308/15/6'}, {'attribute': 'test_attribute_3', 'attribute_ont_id': 'CHEBI:9168', 'attribute_ont_ref': '6308/19/1', 'source': 'upload', 'unit': 'nanogram per milliliter', 'unit_ont_id': 'UO:0000275', 'unit_ont_ref': '6308/15/6'}]
+
 
         attr_pos = None
         for idx, attribute in enumerate(attributes):
@@ -352,12 +363,20 @@ class PCAUtil:
                                                                          attri_name))
 
         instances = attri_data.get('instances')
+        #exit(instances) {'test_row_instance_1': ['1', '4', '7'], 'test_row_instance_2': ['3', '4', '8'], 'test_row_instance_3': ['3', '6', '7']}
 
         plot_pca_matrix['attribute_value_size'] = None
         for instance_name, attri_values in instances.items():
             plot_pca_matrix.loc[plot_pca_matrix.instance == instance_name,
                                 ['attribute_value_size']] = attri_values[attr_pos]
+        #exit(plot_pca_matrix)
+        '''
+        principal_component_1          ...           attribute_value_size
+        WRI_RS00010_CDS_1              -0.853094          ...                              1
+        WRI_RS00015_CDS_1              -0.247377          ...                              3
+        WRI_RS00025_CDS_1               1.100471          ...                              3
 
+        '''
         return plot_pca_matrix
 
     def _build_color_pca_matrix(self, plot_pca_matrix, obj_data, dimension, attribute_name):
@@ -402,9 +421,10 @@ class PCAUtil:
                                                                          attri_name))
 
         instances = attri_data.get('instances')
-
+        #exit(instances) {'test_row_instance_1': ['1', '4', '7'], 'test_row_instance_2': ['3', '4', '8'], 'test_row_instance_3': ['3', '6', '7']}
         plot_pca_matrix['attribute_value_color'] = None
         for instance_name, attri_values in instances.items():
+            #exit(attri_values) ['1', '4', '7']
             plot_pca_matrix.loc[plot_pca_matrix.instance == instance_name,
                                 ['attribute_value_color']] = attri_values[attr_pos]
 
@@ -592,6 +612,7 @@ class PCAUtil:
             err_msg += 'Please supply KBaseMatrices object'
             raise ValueError("err_msg")
 
+        
         pca_ref = self._save_pca_matrix(workspace_name, input_obj_ref, pca_matrix_name,
                                         rotation_matrix_df, components_df, explained_variance,
                                         explained_variance_ratio, singular_values,
